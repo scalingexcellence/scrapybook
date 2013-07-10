@@ -1,19 +1,43 @@
 from scrapy.contrib.spiders import CrawlSpider
 from properties.items import PropertiesItem
+from scrapy.xlib.pydispatch import dispatcher
 from scrapy.selector import HtmlXPathSelector
 from datetime import datetime
-import socket, re, pickle
+from scrapy import signals
+import socket, re, pickle, subprocess, os
 
 class WorkerSpider(CrawlSpider):
     name = "worker"
     allowed_domains = ["gumtree.com"]
 
-    def __init__(self, url=None, *a, **kw):
+    def __init__(self, url=None, mongohost=None, db=None, collection=None, *a, **kw):
         super(WorkerSpider, self).__init__(*a, **kw)
+
+        # Getting an array of urls
         if url.startswith("http"):
             self.start_urls = [url]
         else:
             self.start_urls = pickle.loads(url)
+
+        # If we want to use mongoimport, we store the extra arguments and listen to the signal
+        if mongohost is not None:
+            self.mongohost = mongohost
+            self.db = db
+            self.collection = collection
+            dispatcher.connect(self._mongoimport, signals.spider_closed)
+
+    def _mongoimport(self, spider):
+        subprocess.call([
+            'mongoimport',
+            '--host', self.mongohost,
+            '--db', self.db,
+            '--collection', self.collection,
+            '--file', "/var/lib/scrapyd/items/%s/%s/%s.jl" % (
+                self.settings.get('BOT_NAME'),
+                self.name,
+                os.environ['SCRAPY_JOB']
+            )
+        ])
 
     def parse(self, response):
         hxs = HtmlXPathSelector(response)
