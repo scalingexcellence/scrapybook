@@ -3,7 +3,6 @@ from scrapy.item import Item, Field
 class PropertiesItem(Item):
     title = Field()
     price = Field()
-    available = Field()
     description = Field()
     image = Field()
     breadcrumbs = Field()

@@ -2,7 +2,7 @@ from scrapy.contrib.spiders import CrawlSpider
 from properties.items import PropertiesItem
 from scrapy.selector import HtmlXPathSelector
 from datetime import datetime
-import socket, re
+import socket, re, pickle
 
 class WorkerSpider(CrawlSpider):
     name = "worker"
@@ -10,7 +10,10 @@ class WorkerSpider(CrawlSpider):
 
     def __init__(self, url=None, *a, **kw):
         super(WorkerSpider, self).__init__(*a, **kw)
-        self.start_urls = [url]
+        if url.startswith("http"):
+            self.start_urls = [url]
+        else:
+            self.start_urls = pickle.loads(url)
 
     def parse(self, response):
         hxs = HtmlXPathSelector(response)
@@ -20,7 +23,6 @@ class WorkerSpider(CrawlSpider):
 
         item['title'      ] = maybe0(hxs.select('//*[@id="primary-h1"]/span[1]/text()'     ).extract())
         item['price'      ] = maybe0(hxs.select('//*[@id="primary-h1"]/span[2]/span/text()').extract())
-        item['available'  ] = maybe0(hxs.select('//*[@id="vip-attributes"]/li[1]/p/text()' ).extract())
         item['description'] = maybe0(hxs.select('//*[@id="vip-description-text"]/text()'   ).extract())
         item['image'      ] = maybe0(hxs.select('//*[@id="gallery-item-mid-1"]/a/img/@src' ).extract())
         item['breadcrumbs'] = hxs.select('//*[@id="breadcrumbs"]/li/a/text()').extract()
