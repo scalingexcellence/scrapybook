@@ -10,6 +10,7 @@ class PropertiesItem(Item):
     website = Field()
     address = Field()
     loc = Field()
+    geo_addr = Field()
     project = Field()
     spider = Field()
     server = Field()
