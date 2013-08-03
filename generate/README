@@ -1,0 +1,38 @@
+** Create prerequisites from database:
+
+mongo --quiet scrapy_lon descriptions.js > descriptions.txt
+mongo --quiet scrapy_lon loctions.js > locations.txt
+mongo --quiet scrapy_lon titles.js > titles.txt
+
+** Generating
+
+./create.py
+
+** Testing outputs:
+
+scrapy shell properties/property_000000.html
+
+import re
+pretty_extract = lambda x: "\n".join(x.extract()).strip()
+item={}
+item['title'      ] = pretty_extract(hxs.select('//*[@id="primary-h1"]/span[1]/text()'     ))
+item['price'      ] = pretty_extract(hxs.select('//*[@id="primary-h1"]/span[2]/span/text()'))
+item['description'] = pretty_extract(hxs.select('//*[@id="vip-description-text"]/text()'   ))
+item['image'      ] = pretty_extract(hxs.select('//*[@id="gallery-item-mid-1"]/a/img/@src' ))
+item['breadcrumbs'] = hxs.select('//*[@id="breadcrumbs"]/li/a/text()').extract()
+item['url'        ] = response.url
+item['website'    ] = "Gumtree"
+item['address'    ] = pretty_extract(hxs.select('//*[@class="ad-location"]/text()'         ))
+item['price'] = float(re.sub("[^0-9]", "", item['price'])) / (4.3 if item['price'].endswith("pm") else 1)
+
+
+scrapy shell properties/index_00000.html
+
+hxs.select('//*[@class="description"]/@href').extract()
+hxs.select('//*[@id="pagination"]/ul/li/a').extract()
+
+** Publishing
+
+rm -rf /var/www/properties
+cp -r properties /var/www/properties
+

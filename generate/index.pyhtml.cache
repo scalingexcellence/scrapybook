@@ -1,0 +1,24 @@
+timestamp: 1375491946.0
+args: page, nextp, links
+
+# -*- coding: utf-8 -*-
+page = _context.get('page'); nextp = _context.get('nextp'); links = _context.get('links'); 
+_extend=_buf.extend;_to_str=to_str;_escape=escape; _extend(('''<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
+<title>Scrapy Book Tutorial Example</title>
+</head>
+<body>
+  <h1>Page ''', _escape(_to_str(page)), '''</h1>
+  <ul>\n''', ));
+for link in links:
+    _extend(('''    <li><a class="description" href="''', _escape(_to_str(link)), '''">link</a></li>\n''', ));
+#endfor
+_extend(('''  </ul>\n''', ));
+if nextp:
+    _extend(('''  <div id="pagination"><ul><li><a href="''', _escape(_to_str(nextp)), '''">next</a></li></ul></div>\n''', ));
+#endif
+_extend(('''  <p>Example index page. For more information: <a href="http://scrapybook.com">scrapybook.com</a></p>
+</body>
+</html>\n''', ));

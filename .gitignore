@@ -3,3 +3,4 @@ build
 project.egg-info
 setup.py
 *.swp
+/generate/properties/*

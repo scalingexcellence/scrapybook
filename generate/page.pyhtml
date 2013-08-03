@@ -1,0 +1,21 @@
+<?py # -*- coding: utf-8 -*- ?>
+<?py #@ARGS item ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
+<title>Scrapy Book Tutorial Example</title>
+</head>
+<body>
+  <h1 id="primary-h1"><span>${item['title']}</span><span><span>${item["price"]}</span></span></h1>
+  <p id="vip-description-text">${item['description']}</p>
+  <div id="gallery-item-mid-1"><a><img src="${item['image']}" alt="image" /></a></div>
+  <ul id="breadcrumbs">
+    <?py for b in item["breadcrumbs"]: ?>
+    <li><a>${b}</a></li>
+    <?py #endfor ?>
+  </ul>
+  <div class="ad-location">${item['address']}</div>
+  <p>Example property. For more information: <a href="http://scrapybook.com">scrapybook.com</a></p>
+</body>
+</html>

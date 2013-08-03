@@ -1,0 +1,21 @@
+<?py # -*- coding: utf-8 -*- ?>
+<?py #@ARGS page, nextp, links ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
+<title>Scrapy Book Tutorial Example</title>
+</head>
+<body>
+  <h1>Page ${page}</h1>
+  <ul>
+    <?py for link in links: ?>
+    <li><a class="description" href="${link}">link</a></li>
+    <?py #endfor ?>
+  </ul>
+  <?py if nextp: ?>
+  <div id="pagination"><ul><li><a href="${nextp}">next</a></li></ul></div>
+  <?py #endif ?>
+  <p>Example index page. For more information: <a href="http://scrapybook.com">scrapybook.com</a></p>
+</body>
+</html>
