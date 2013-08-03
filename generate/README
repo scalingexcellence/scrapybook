@@ -39,7 +39,5 @@ cp -r properties /var/www/properties
 
 ** Uploading to S3
 
-for i in `find properties -type f`; do s3cmd put --acl-public --guess-mime-type $i s3://scrapybook/$i; done
-
-
+find properties -type f | xargs -P 40 -n 1 ./file_to_s3.sh scrapybook
 
