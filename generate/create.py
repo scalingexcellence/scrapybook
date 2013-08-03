@@ -9,7 +9,6 @@ engine = tenjin.Engine()
 
 tocreate = int(sys.argv[1])
 index_contains = 50
-domain = "http://scrapybook.s3-website-us-east-1.amazonaws.com/"
 
 locations = filter(None, [line.strip() for line in open("locations.txt")])
 titles = filter(None, [line.strip() for line in open("titles.txt")])
@@ -25,7 +24,7 @@ for t in xrange(0,tocreate):
     title = create_sentence(titles)
     description = "\r\n".join([create_sentence(descriptions) for i in xrange(0,randint(1,5))])
     price = ", price: %d" % randint(120, 400)
-    image = "a%d.jpg" % randint(2,2)
+    image = "images/i%02d.jpg" % randint(0,17)
 
     item = {
         "description" : description,
@@ -33,7 +32,7 @@ for t in xrange(0,tocreate):
         "breadcrumbs" : [ location ],
         "price" : price,
         "address" : location,
-        "image" : domain + "images/" + image
+        "image" : image
     }
     
     f = open("properties/property_%06d.html" % t, "w")

@@ -10,11 +10,11 @@
   <h1>Page ${page}</h1>
   <ul>
     <?py for link in links: ?>
-    <li><a class="description" href="${link}">link</a></li>
+    <li><a class="description" href="${link}" rel="nofollow">link</a></li>
     <?py #endfor ?>
   </ul>
   <?py if nextp: ?>
-  <div id="pagination"><ul><li><a href="${nextp}">next</a></li></ul></div>
+  <div id="pagination"><ul><li><a href="${nextp}" rel="nofollow">next</a></li></ul></div>
   <?py #endif ?>
   <p>Example index page. For more information: <a href="http://scrapybook.com">scrapybook.com</a></p>
 </body>

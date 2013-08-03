@@ -9,10 +9,10 @@
 <body>
   <h1 id="primary-h1"><span>${item['title']}</span><span><span>${item["price"]}</span></span></h1>
   <p id="vip-description-text">${item['description']}</p>
-  <div id="gallery-item-mid-1"><a><img src="${item['image']}" alt="image" /></a></div>
+  <div id="gallery-item-mid-1"><a rel="nofollow"><img src="${item['image']}" alt="image" /></a></div>
   <ul id="breadcrumbs">
     <?py for b in item["breadcrumbs"]: ?>
-    <li><a>${b}</a></li>
+    <li><a rel="nofollow">${b}</a></li>
     <?py #endfor ?>
   </ul>
   <div class="ad-location">${item['address']}</div>

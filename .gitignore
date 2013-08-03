@@ -1,6 +1,8 @@
 *.py[cod]
+.DS_Store
 build
 project.egg-info
 setup.py
 *.swp
+*.cache
 /generate/properties/*

@@ -6,7 +6,7 @@ mongo --quiet scrapy_lon titles.js > titles.txt
 
 ** Generating
 
-./create.py
+./create.py 150
 
 ** Testing outputs:
 
@@ -31,8 +31,15 @@ scrapy shell properties/index_00000.html
 hxs.select('//*[@class="description"]/@href').extract()
 hxs.select('//*[@id="pagination"]/ul/li/a').extract()
 
-** Publishing
+** Publishing internaly
 
-rm -rf /var/www/properties
+rm -rf /var/www/properties 
+cp -r images     properties/images
 cp -r properties /var/www/properties
+
+** Uploading to S3
+
+for i in `find properties -type f`; do s3cmd put --acl-public --guess-mime-type $i s3://scrapybook/$i; done
+
+
 
