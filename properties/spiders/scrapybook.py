@@ -39,11 +39,10 @@ class ScrapybookSpider(CrawlSpider):
             # If it's a master spider set some default values
             self.db = getattr(self, "db", "properties")
             self.collection = getattr(self, "collection", "properties")
-            self.workers = getattr(self, "workers", "workers.txt")
 
             # and if a file with workers is given, parse IPs of workers
             try:
-                self.workers = filter(None, [line.strip() for line in open(self.workers)])
+                self.workers = filter(None, [line.strip() for line in open(getattr(self, "workers", "workers.txt"))])
             except IOError:
                 self.workers = ["localhost"]
 
