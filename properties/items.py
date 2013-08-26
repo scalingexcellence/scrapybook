@@ -7,7 +7,6 @@ class PropertiesItem(Item):
     image = Field()
     breadcrumbs = Field()
     url = Field()
-    website = Field()
     rank = Field()
     address = Field()
     loc = Field()
@@ -16,3 +15,4 @@ class PropertiesItem(Item):
     spider = Field()
     server = Field()
     date = Field()
+
