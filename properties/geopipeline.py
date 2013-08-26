@@ -1,5 +1,5 @@
 from geopy import geocoders
-from properties.MongoCacheBasePipeline import *
+from scrapymongocache import *
 
 class GeocodingPipeline(MongoCacheBasePipeline):
     def __init__(self):
@@ -13,6 +13,6 @@ class GeocodingPipeline(MongoCacheBasePipeline):
             item["geo_addr"] = geo_addr
         except:
             pass
-        
+
         return item
 

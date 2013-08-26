@@ -11,7 +11,7 @@ BOT_NAME = 'properties'
 SPIDER_MODULES = ['properties.spiders']
 NEWSPIDER_MODULE = 'properties.spiders'
 
-ITEM_PIPELINES = ['properties.GeocodingPipeline.GeocodingPipeline']
+ITEM_PIPELINES = ['properties.geopipeline.GeocodingPipeline']
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'properties (+http://www.yourdomain.com)'
