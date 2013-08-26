@@ -8,6 +8,7 @@ class PropertiesItem(Item):
     breadcrumbs = Field()
     url = Field()
     website = Field()
+    rank = Field()
     address = Field()
     loc = Field()
     geo_addr = Field()
