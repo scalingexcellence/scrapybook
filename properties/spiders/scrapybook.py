@@ -25,48 +25,6 @@ class ScrapybookSpider(CrawlSpider):
         Rule(item_extractor, callback='parse_item')
     )
 
-    def __init__(self, mode="standalone", *a, **kw):
-        self.mode = mode
-
-        if self.mode == "master":
-            self.rules = ( Rule(self.index_extractor, callback='parse_links', follow=True), )
-        
-        super(ScrapybookSpider, self).__init__(*a, **kw)
-
-        self.log("spider running in %s mode" % self.mode)
-
-        if self.mode=="master":
-            # If it's a master spider set some default values
-            self.db = getattr(self, "db", "properties")
-            self.collection = getattr(self, "collection", "properties")
-
-            # and if a file with workers is given, parse IPs of workers
-            try:
-                self.workers = filter(None, [line.strip() for line in open(getattr(self, "workers", "workers.txt"))])
-            except IOError:
-                self.workers = ["localhost"]
-
-            # finaly initialize the batch processing engine
-            self.batch = []
-            dispatcher.connect(self._send_batch, signals.spider_closed)
-
-        elif self.mode=="worker":
-            # If it's a worker spider, process only the URLs given
-            if hasattr(self,'url'):
-                self.start_urls = [self.url] or self.start_urls if self.url.startswith("http") else pickle.loads(self.url)
-
-            # If parameters for storing to mongodb given, register a spider_closed handler
-            if all(getattr(self, i, None) for i in ("mongohost", "db", "collection")):
-                dispatcher.connect(self._mongoimport, signals.spider_closed)
-
-            # Instead of using rules for parsing, try to parse an item directly
-            self.parse = self.parse_item
-    
-    def parse_links(self, response):
-        # For each link
-        for link in self.item_extractor.extract_links(response):
-            self._add_to_batch(link.url)
-
     def parse_item(self, response):
 
         # Define an ItemLoader that loads PropertiesItem
@@ -116,6 +74,35 @@ class ScrapybookSpider(CrawlSpider):
         
         return item
 
+class ScrapybookSpiderMaster(ScrapybookSpider):
+    name = ScrapybookSpider.name + "-master"
+
+    rules = (
+        Rule(ScrapybookSpider.index_extractor, callback='parse_links', follow=True),
+    )
+
+    def __init__(self, *a, **kw):
+        super(ScrapybookSpiderMaster, self).__init__(*a, **kw)
+
+        # If it's a master spider set some default values
+        self.db = getattr(self, "db", "properties")
+        self.collection = getattr(self, "collection", "properties")
+    
+        # and if a file with workers is given, parse IPs of workers
+        try:
+            self.workers = filter(None, [line.strip() for line in open(getattr(self, "workers", "workers.txt"))])
+        except IOError:
+            self.workers = ["localhost"]
+
+        # finaly initialize the batch processing engine
+        self.batch = []
+        dispatcher.connect(self._send_batch, signals.spider_closed)
+
+    def parse_links(self, response):
+        # For each link
+        for link in self.item_extractor.extract_links(response):
+            self._add_to_batch(link.url)
+
     def _add_to_batch(self, url):
         self.batch.append(url)
         if len(self.batch)>=BATCH_SIZE:
@@ -127,15 +114,33 @@ class ScrapybookSpider(CrawlSpider):
         worker = random.choice(self.workers)
         requests.post("http://%s:6800/schedule.json" % worker , data={
             "project":    self.settings.get('BOT_NAME'),
-            "spider":     self.name,
-            "mode":       "worker",
+            "spider":     self.name.replace("-master", "-worker"),
             "url":        pickle.dumps(self.batch),
             "mongohost":  socket.gethostbyname(socket.gethostname()),
             "db":         self.db,
             "collection": self.collection
         })
-        print "just scheduled a batch with size %d -> %s" % (len(self.batch), worker)
-        self.batch=[]
+        print "Just scheduled a batch with size %d on node %s" % (len(self.batch), worker)
+        self.batch = []
+
+
+class ScrapybookSpiderWorker(ScrapybookSpider):
+    name = ScrapybookSpider.name + "-worker"
+
+    def __init__(self, *a, **kw):
+        super(ScrapybookSpiderWorker, self).__init__(*a, **kw)
+
+        # If it's a worker spider, process only the URLs given
+        self.start_urls = [self.url] if self.url.startswith("http") else pickle.loads(self.url)
+
+        # If parameters for storing to mongodb given, register a spider_closed handler
+        if all(getattr(self, i, None) for i in ("mongohost", "db", "collection")):
+            dispatcher.connect(self._mongoimport, signals.spider_closed)
+
+    # Override default behaviour. This way rules won't be used but items
+    # will be parsed directly
+    def parse(self, response):
+        return self.parse_item(response)
 
     def _mongoimport(self, spider):
         subprocess.call([
