@@ -15,3 +15,12 @@ ITEM_PIPELINES = ['properties.geopipeline.GeocodingPipeline']
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'properties (+http://www.yourdomain.com)'
+
+EXTENSIONS = {
+    'properties.distextension.BatchToScrapyd': 500,
+    'properties.distextension.MongoImportOnFinish': 500
+}
+
+DIST_MONGO_DB = 'properties'
+DIST_MONGO_COLLECTION = 'properties'
+
