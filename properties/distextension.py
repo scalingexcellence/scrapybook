@@ -29,6 +29,7 @@ class BatchToScrapyd(object):
             self.workers = ["localhost"]
 
         self.batch = []
+        self.total = 0
 
     @classmethod
     def from_crawler(cls, crawler):
@@ -37,14 +38,14 @@ class BatchToScrapyd(object):
         ext = cls(
             crawler.settings.get('DIST_WORKERS', "workers.txt"),
             crawler.settings.get('BOT_NAME'),
-            crawler.settings.getint('DIST_BATCH_SIZE', 1000),
+            crawler.settings.getint('DIST_BATCH_SIZE', 400),
             crawler.settings.get('DIST_MONGO_HOST', host),
             crawler.settings.get('DIST_MONGO_DB'),
             crawler.settings.get('DIST_MONGO_COLLECTION')
         )
 
         # connect the extension object to signals
-        crawler.signals.connect(ext.send_batch, signal=signals.spider_closed)
+        crawler.signals.connect(ext.spider_ended, signal=signals.spider_closed)
         crawler.signals.connect(ext.add_to_batch, signal=links_extracted)
 
         # return the extension object
@@ -54,6 +55,10 @@ class BatchToScrapyd(object):
         self.batch += urls
         if len(self.batch) >= self.batch_size:
             self.send_batch(spider)
+			
+    def spider_ended(self, spider):
+        self.send_batch(spider)
+        spider.log("BatchToScrapyd: Total, %d URLs" % self.total)
 
     def send_batch(self, spider):
         if not self.batch:
@@ -78,6 +83,7 @@ class BatchToScrapyd(object):
             print "BatchToScrapyd: Scheduled %d URLs on node %s" % (
                 len(self.batch), worker)
 
+        self.total += len(self.batch)
         self.batch = []
 
 
