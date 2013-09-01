@@ -1,5 +1,6 @@
 from scrapy.item import Item, Field
 
+
 class PropertiesItem(Item):
     title = Field()
     price = Field()
@@ -15,4 +16,3 @@ class PropertiesItem(Item):
     spider = Field()
     server = Field()
     date = Field()
-

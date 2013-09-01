@@ -1,0 +1,9 @@
+#!/bin/bash
+
+for i in `find properties -type f -name "*.py"`
+do
+    pep8 $i
+    pyflakes $i
+    #pylint $i
+done
+

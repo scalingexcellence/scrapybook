@@ -13,7 +13,8 @@ NEWSPIDER_MODULE = 'properties.spiders'
 
 ITEM_PIPELINES = ['properties.geopipeline.GeocodingPipeline']
 
-# Crawl responsibly by identifying yourself (and your website) on the user-agent
+# Crawl responsibly by identifying yourself (and your website)
+# on the user-agent
 #USER_AGENT = 'properties (+http://www.yourdomain.com)'
 
 EXTENSIONS = {
@@ -23,4 +24,3 @@ EXTENSIONS = {
 
 DIST_MONGO_DB = 'properties'
 DIST_MONGO_COLLECTION = 'properties'
-

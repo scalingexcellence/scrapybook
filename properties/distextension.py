@@ -55,7 +55,7 @@ class BatchToScrapyd(object):
         self.batch += urls
         if len(self.batch) >= self.batch_size:
             self.send_batch(spider)
-			
+
     def spider_ended(self, spider):
         self.send_batch(spider)
         spider.log("BatchToScrapyd: Total, %d URLs" % self.total)

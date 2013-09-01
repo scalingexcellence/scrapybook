@@ -1,5 +1,6 @@
 from geopy import geocoders
-from scrapymongocache import *
+from scrapymongocache import MongoCacheBasePipeline, cache
+
 
 class GeocodingPipeline(MongoCacheBasePipeline):
     def __init__(self):
@@ -8,11 +9,13 @@ class GeocodingPipeline(MongoCacheBasePipeline):
     @cache("loc_cache.cache", "address", ["loc", "geo_addr"])
     def process_item(self, item, spider):
         try:
-            geo_addr, (lat, lng) = self.geo.geocode(item["address"], exactly_one = False)[0]
+            geo_addr, (lat, lng) = self.geo.geocode(
+                item["address"],
+                exactly_one=False
+            )[0]
             item["loc"] = [lng, lat]
             item["geo_addr"] = geo_addr
         except:
             pass
 
         return item
-

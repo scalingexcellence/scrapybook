@@ -3,9 +3,8 @@ from scrapy.contrib.linkextractors.sgml import SgmlLinkExtractor
 from scrapy.contrib.loader import XPathItemLoader
 from scrapy.contrib.loader.processor import TakeFirst, Identity, MapCompose
 from properties.items import PropertiesItem
-from properties.distextension import links_extracted
+from properties.spiders.distributed import distr
 
-import pickle
 import socket
 import re
 import datetime
@@ -92,36 +91,4 @@ class ScrapybookSpider(CrawlSpider):
 
         return item
 
-
-class ScrapybookSpiderMaster(ScrapybookSpider):
-    name = ScrapybookSpider.name + "-master"
-
-    rules = (
-        Rule(ScrapybookSpider.index_extractor,
-             callback='parse_links', follow=True),
-    )
-
-    def parse_links(self, response):
-        urls = [l.url for l in self.item_extractor.extract_links(response)]
-        self.crawler.signals.send_catch_log(
-            links_extracted,
-            urls=urls,
-            spider=self)
-
-
-class ScrapybookSpiderWorker(ScrapybookSpider):
-    name = ScrapybookSpider.name + "-worker"
-
-    def __init__(self, *a, **kw):
-        super(ScrapybookSpiderWorker, self).__init__(*a, **kw)
-
-        # If it's a worker spider, process only the URLs given
-        if self.url.startswith("http"):
-            self.start_urls = [self.url]
-        else:
-            self.start_urls = pickle.loads(self.url)
-
-    # Override default behaviour. This way rules won't be used but items
-    # will be parsed directly
-    def parse(self, response):
-        return self.parse_item(response)
+ScrapybookSpiderMaster, ScrapybookSpiderWorker = distr(ScrapybookSpider)
