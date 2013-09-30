@@ -9,10 +9,9 @@
 <body>
   <h1>Page ${page}</h1>
   <ul>
-    <?py for item in items: ?>
+    <?py for item in its: ?>
     <li class="hlisting style1">
-      <a class="description" href="${item['link']}" rel="nofollow"><p class="ad-title-text">${item['title']}</p></a>
-      <p class="price">${item['price']}</p><p class="location">${item['address']}</p>
+      <span class="ad-title-text"><a class="description" href="${item['link']}" rel="nofollow">${item['title']}</a></span><span class="price">${item['price']}</span> <span class="location">${item['address']}</span>
     </li>
     <?py #endfor ?>
   </ul>

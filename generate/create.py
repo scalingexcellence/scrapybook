@@ -45,7 +45,8 @@ for t in xrange(0,tocreate):
 indices = int(math.ceil(float(tocreate)/index_contains))
 for page in xrange(0,indices):
     nextp = None if page == (indices-1) else ("index_%05d.html" % (page+1))
+    its = items[index_contains*page : min(index_contains*(page+1), tocreate)]
     f = open("properties/index_%05d.html" % page, "w")
-    f.write(engine.render('index.pyhtml', {'page':page, 'nextp':nextp, 'items': items[index_contains*page:min(index_contains*(page+1), tocreate)]} ))
+    f.write(engine.render('index.pyhtml', {'page':page, 'nextp':nextp, 'its': its}))
     f.close()
 
