@@ -28,7 +28,17 @@ item['price'] = float(re.sub("[^0-9]", "", item['price'])) / (4.3 if item['price
 
 scrapy shell properties/index_00000.html
 
+
 hxs.select('//*[@class="description"]/@href').extract()
+hxs.select('//*[@class="ad-title-text"]/text()').extract()
+hxs.select('//*[@class="price"]/text()').extract()
+hxs.select('//*[@class="location"]/text()').extract()
+
+hxs.select('//li[contains(@class,"hlisting")]')[0].select('.//*[@class="description"]/@href').extract()
+hxs.select('//li[contains(@class,"hlisting")]')[0].select('.//*[@class="ad-title-text"]/text()').extract()
+hxs.select('//li[contains(@class,"hlisting")]')[0].select('.//*[@class="price"]/text()').extract()
+hxs.select('//li[contains(@class,"hlisting")]')[0].select('.//*[@class="location"]/text()').extract()
+
 hxs.select('//*[@id="pagination"]/ul/li/a').extract()
 
 ** Publishing internaly
@@ -40,4 +50,11 @@ cp -r properties /var/www/properties
 ** Uploading to S3
 
 find properties -type f | xargs -P 40 -n 1 ./file_to_s3.sh scrapybook
+
+** Deleting from S3
+
+s3cmd ls s3://scrapybook/properties/ | tee lsres.txt
+#Remove the first two lines manually and then...
+sed 's/.............................//' lsres.txt > lsres2.txt 
+cat lsres2.txt | xargs -P 40 -n 1 s3cmd del
 
