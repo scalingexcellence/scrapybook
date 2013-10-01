@@ -19,6 +19,7 @@ create_sentence = lambda x: " ".join([choice(x) for i in xrange(0,randint(1,10))
 if not os.path.exists('properties'):
     os.mkdir('properties')
 
+items = []
 for t in xrange(0,tocreate):
     location = choice(locations)
     title = create_sentence(titles)
@@ -32,8 +33,10 @@ for t in xrange(0,tocreate):
         "breadcrumbs" : [ location ],
         "price" : price,
         "address" : location,
-        "image" : image
+        "image" : image,
+        "link" : "property_%06d.html" % len(items)
     }
+    items.append(item)
     
     f = open("properties/property_%06d.html" % t, "w")
     f.write(engine.render('page.pyhtml', {'item':item} ))
@@ -42,8 +45,8 @@ for t in xrange(0,tocreate):
 indices = int(math.ceil(float(tocreate)/index_contains))
 for page in xrange(0,indices):
     nextp = None if page == (indices-1) else ("index_%05d.html" % (page+1))
-    links = [ "property_%06d.html" % t for t in xrange(index_contains*page, min(index_contains*(page+1), tocreate)) ]
+    its = items[index_contains*page : min(index_contains*(page+1), tocreate)]
     f = open("properties/index_%05d.html" % page, "w")
-    f.write(engine.render('index.pyhtml', {'page':page, 'nextp':nextp, 'links': links} ))
+    f.write(engine.render('index.pyhtml', {'page':page, 'nextp':nextp, 'its': its}))
     f.close()
 
