@@ -6,7 +6,6 @@ from properties.items import PropertiesItem
 from properties.spiders.distributed import distr
 
 import socket
-import re
 import datetime
 
 
@@ -69,26 +68,6 @@ class ScrapybookSpider(CrawlSpider):
             [link.url for link in image_extractor.extract_links(response)]
         )
 
-        # Done. Load item
-        item = l.load_item()
-
-        # Price management
-        price = item['price']
-        if not price:
-            self.log("%s doesn't have a price" % response.url)
-            return
-
-        # If price per month then divide by 4.3 to convert to per week
-        norm = 4.3 if item['price'].endswith("pm") else 1
-        price = price.replace(",", "")  # remove commas e.g. 1,234 -> 1234
-        price = re.sub("\..*", "", price)  # remove any decimal e.g. 3.21 -> 3
-        price = re.sub("[^0-9]", "", price)  # remove non-numeric characters
-        price = float(price) / norm  # convert to float and normalize
-        item['price'] = price
-
-        # Set a simplistic rank value
-        item['rank'] = 1.0 / (price + 1.0)
-
-        return item
+        return l.load_item()
 
 ScrapybookSpiderMaster, ScrapybookSpiderWorker = distr(ScrapybookSpider)

@@ -11,7 +11,10 @@ BOT_NAME = 'properties'
 SPIDER_MODULES = ['properties.spiders']
 NEWSPIDER_MODULE = 'properties.spiders'
 
-ITEM_PIPELINES = ['properties.geopipeline.GeocodingPipeline']
+ITEM_PIPELINES = [
+'properties.pipelines.PricePipeline',
+'properties.geopipeline.GeocodingPipeline'
+]
 
 # Crawl responsibly by identifying yourself (and your website)
 # on the user-agent
@@ -24,3 +27,5 @@ EXTENSIONS = {
 
 DIST_MONGO_DB = 'properties'
 DIST_MONGO_COLLECTION = 'properties'
+
+HTTPCACHE_ENABLED = True
