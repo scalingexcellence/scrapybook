@@ -50,24 +50,27 @@ class ScrapybookSpider(CrawlSpider):
         l.add_xpath('address',     '//*[@class="ad-location"]/text()')
         l.add_xpath('breadcrumbs', '//*[@id="breadcrumbs"]/li/a/text()')
 
-        # When we can't use XPath's load values directly
-        l.add_value('url', response.url)
-        l.add_value('project', self.settings.get('BOT_NAME'))
-        l.add_value('spider', self.name)
-        hn = socket.gethostname()
-        l.add_value('server', u"%s (%s)" % (hn, socket.gethostbyname(hn)))
-        l.add_value('date', datetime.datetime.now())
-
         # In case of images, use an SgmlLinkExtractor to extract the src URL
         image_extractor = SgmlLinkExtractor(
             restrict_xpaths=('//*[@id="gallery-item-mid-1"]/a',),
             tags=('img'), attrs=('src'), deny_extensions=()
         )
+        # Since image isn't extracted via XPath, we can load it's value directly
         l.add_value(
             'image',
             [link.url for link in image_extractor.extract_links(response)]
         )
 
-        return l.load_item()
+        return self.set_common(l.load_item(), response)
 
+    # Some fields that are commonly used
+    def set_common(self, item, response):
+        item['url'] = response.url
+        item['project'] = self.settings.get('BOT_NAME')
+        item['spider'] = self.name
+        hn = socket.gethostname()
+        item['server'] = u"%s (%s)" % (hn, socket.gethostbyname(hn))
+        item['date'] = datetime.datetime.now()
+        return item
+        
 ScrapybookSpiderMaster, ScrapybookSpiderWorker = distr(ScrapybookSpider)

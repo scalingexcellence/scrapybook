@@ -58,3 +58,15 @@ s3cmd ls s3://scrapybook/properties/ | tee lsres.txt
 sed 's/.............................//' lsres.txt > lsres2.txt 
 cat lsres2.txt | xargs -P 40 -n 1 s3cmd del
 
+** Creating api.json
+
+scrapy shell https://s3.amazonaws.com/scrapybook/properties/index_00000.html
+
+open('api.json', 'w').write(json.dumps(map(lambda s: {"title": s[0], "id": s[1]}, zip(hxs.select('//*[@class="ad-title-text"]//text()').extract(),range(0,50)))))
+
+Finally upload:
+
+s3cmd put --acl-public --guess-mime-type api.json s3://scrapybook/properties/api.json
+
+
+
