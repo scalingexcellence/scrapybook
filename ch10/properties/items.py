@@ -5,7 +5,7 @@ class PropertiesItem(Item):
     title = Field()
     price = Field()
     description = Field()
-    image = Field()
+    image_urls = Field()
     breadcrumbs = Field()
     url = Field()
     address = Field()
@@ -15,3 +15,5 @@ class PropertiesItem(Item):
     spider = Field()
     server = Field()
     date = Field()
+    images = Field()
+

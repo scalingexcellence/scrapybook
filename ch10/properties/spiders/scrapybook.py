@@ -57,7 +57,7 @@ class ScrapybookSpider(CrawlSpider):
         )
         # Since image isn't extracted via XPath, we can load it's value directly
         l.add_value(
-            'image',
+            'image_urls',
             [link.url for link in image_extractor.extract_links(response)]
         )
 
