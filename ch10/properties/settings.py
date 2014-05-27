@@ -11,11 +11,11 @@ BOT_NAME = 'properties'
 SPIDER_MODULES = ['properties.spiders']
 NEWSPIDER_MODULE = 'properties.spiders'
 
-ITEM_PIPELINES = [
-'properties.pipelines.PricePipeline': 1,
-'properties.geopipeline.GeocodingPipeline': 2,
-'scrapy.contrib.pipeline.images.ImagesPipeline': 3,
-]
+ITEM_PIPELINES = {
+    'properties.pipelines.PricePipeline': 1,
+    'properties.geopipeline.GeocodingPipeline': 2,
+    'scrapy.contrib.pipeline.images.ImagesPipeline': 3,
+}
 
 # Crawl responsibly by identifying yourself (and your website)
 # on the user-agent
