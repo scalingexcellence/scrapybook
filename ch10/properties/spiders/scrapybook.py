@@ -1,6 +1,6 @@
 from scrapy.contrib.spiders import CrawlSpider, Rule
 from scrapy.contrib.linkextractors.sgml import SgmlLinkExtractor
-from scrapy.contrib.loader import XPathItemLoader
+from scrapy.contrib.loader import ItemLoader
 from scrapy.contrib.loader.processor import TakeFirst, Identity, MapCompose
 from properties.items import PropertiesItem
 from properties.spiders.distributed import distr
@@ -34,9 +34,10 @@ class ScrapybookSpider(CrawlSpider):
         # Whenever XPath expressions return an array, get the first item
         # except from breadcrumbs where we want the array itself
         # Cleanup description and cleanup and capitalize properly titles
-        class PropertiesItemLoader(XPathItemLoader):
+        class PropertiesItemLoader(ItemLoader):
             default_output_processor = TakeFirst()
             breadcrumbs_out = Identity()
+            image_urls_out = Identity()
             description_in = MapCompose(unicode.strip)
             title_in = MapCompose(unicode.strip, unicode.title)
 

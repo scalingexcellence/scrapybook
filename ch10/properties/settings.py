@@ -12,9 +12,8 @@ SPIDER_MODULES = ['properties.spiders']
 NEWSPIDER_MODULE = 'properties.spiders'
 
 ITEM_PIPELINES = {
-    'properties.pipelines.PricePipeline': 1,
-    'properties.geopipeline.GeocodingPipeline': 2,
-    'scrapy.contrib.pipeline.images.ImagesPipeline': 3,
+    'properties.pipelines.PricePipeline': 100, 
+    'properties.geopipeline.GeocodingPipeline': 200,
 }
 
 # Crawl responsibly by identifying yourself (and your website)
@@ -30,3 +29,12 @@ DIST_MONGO_DB = 'properties'
 DIST_MONGO_COLLECTION = 'properties'
 
 HTTPCACHE_ENABLED = True
+
+ENABLE_IMAGES = False
+if ENABLE_IMAGES:
+    import os
+    ITEM_PIPELINES['scrapy.contrib.pipeline.images.ImagesPipeline'] = 1
+    IMAGES_STORE = os.path.join(os.getcwd(), 'images')
+    if not os.path.exists(IMAGES_STORE):
+        os.makedirs(IMAGES_STORE)
+

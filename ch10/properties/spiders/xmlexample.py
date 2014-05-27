@@ -1,10 +1,10 @@
-from scrapy.spider import BaseSpider
+from scrapy.spider import Spider
 from scrapy.selector import HtmlXPathSelector, XmlXPathSelector
 from scrapy.http import Request
 from scrapy import log
 
 
-class XmlExampleSpider(BaseSpider):
+class XmlExampleSpider(Spider):
     name = "foaf"
     start_urls = ["http://people.apache.org/committers.html"]
 
