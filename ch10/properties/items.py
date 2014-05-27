@@ -9,7 +9,7 @@ class PropertiesItem(Item):
     breadcrumbs = Field()
     url = Field()
     address = Field()
-    loc = Field()
+    location = Field()
     geo_addr = Field()
     project = Field()
     spider = Field()
