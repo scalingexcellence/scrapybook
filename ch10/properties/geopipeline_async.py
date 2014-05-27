@@ -23,7 +23,7 @@ def decodeGGeocodingV3Body(body):
         raise Exception("API error '%s'" % r['error_message'])
     first = r['results'][0]
     location = first["geometry"]["location"]
-    return first["formatted_address"], [location["lat"], location["lng"]]
+    return first["formatted_address"], [location["lng"], location["lat"]]
 
 class GeocodingPipeline(object):
 

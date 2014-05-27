@@ -13,7 +13,7 @@ class GeocodingPipeline(MongoCacheBasePipeline):
                 item["address"],
                 exactly_one=False
             )[0]
-            item["location"] = [lat, lng]
+            item["location"] = [lng, lat]
         except:
             pass
 
