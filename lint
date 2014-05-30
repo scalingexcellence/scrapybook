@@ -1,6 +1,6 @@
 #!/bin/bash
 
-for i in `find properties -type f -name "*.py"`
+for i in `find ch* -type f -name "*.py"`
 do
     pep8 $i
     pyflakes $i
