@@ -13,7 +13,7 @@ NEWSPIDER_MODULE = 'properties.spiders'
 
 ITEM_PIPELINES = {
     'properties.pipelines.PricePipeline': 100, 
-    'properties.geopipeline.GeocodingPipeline': 200,
+    'properties.geopipeline_async.GeocodingPipeline': 200,
 }
 
 # Crawl responsibly by identifying yourself (and your website)
