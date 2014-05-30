@@ -40,3 +40,7 @@ nosetests.xml
 .mr.developer.cfg
 .project
 .pydevproject
+
+# This is usually scrapy cache folders
+.scrapy
+

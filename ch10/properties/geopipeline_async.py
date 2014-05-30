@@ -3,6 +3,7 @@ import json
 
 from scrapy.http import Request
 from scrapy import log
+from twisted.internet import defer
 
 def formatGGeocodingV3Url(address):
     parameters = urllib.urlencode({
@@ -36,8 +37,28 @@ class GeocodingPipeline(object):
             pipe = cls()
         pipe.crawler = crawler
         return pipe
-    
+
+    @defer.inlineCallbacks
     def process_item(self, item, spider):
+        address = item["address"]
+        request = Request(formatGGeocodingV3Url(address))
+        try:
+            response = yield self.crawler.engine.download(request, spider)
+            if response.status != 200:
+                raise Exception('Response error (code: %s)' % response.status)
+
+            if not response.body:
+                raise Exception('empty-content')
+
+            item["geo_addr"], item["location"] = decodeGGeocodingV3Body(response.body)
+
+        except Exception as e:
+            log.msg(format="%(error)s: address: '%(address)s', request %(request)s",
+                level=log.WARNING, spider=spider, error=str(e), request=request, address=address)
+        finally:
+            defer.returnValue(item)
+    
+    def process_item2(self, item, spider):
 
         address = item["address"]
 

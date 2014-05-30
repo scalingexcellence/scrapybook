@@ -38,13 +38,15 @@ if ENABLE_IMAGES:
     if not os.path.exists(IMAGES_STORE):
         os.makedirs(IMAGES_STORE)
 
-ITEM_PIPELINES['scrapyelasticsearch.ElasticSearchPipeline'] = 300
+ENABLE_ELASTIC = False
+if ENABLE_ELASTIC:
+    ITEM_PIPELINES['scrapyelasticsearch.ElasticSearchPipeline'] = 300
 
-ELASTICSEARCH_SERVER = 'localhost' # If not 'localhost' prepend 'http://'
-ELASTICSEARCH_PORT = 9200 # If port 80 leave blank
-ELASTICSEARCH_USERNAME = ''
-ELASTICSEARCH_PASSWORD = ''
-ELASTICSEARCH_INDEX = 'scrapybook'
-ELASTICSEARCH_TYPE = 'property'
-ELASTICSEARCH_UNIQ_KEY = 'url'
+    ELASTICSEARCH_SERVER = 'localhost' # If not 'localhost' prepend 'http://'
+    ELASTICSEARCH_PORT = 9200 # If port 80 leave blank
+    ELASTICSEARCH_USERNAME = ''
+    ELASTICSEARCH_PASSWORD = ''
+    ELASTICSEARCH_INDEX = 'scrapybook'
+    ELASTICSEARCH_TYPE = 'property'
+    ELASTICSEARCH_UNIQ_KEY = 'url'
 
