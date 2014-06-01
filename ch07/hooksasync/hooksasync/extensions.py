@@ -2,6 +2,7 @@ from scrapy import log, signals
 from scrapy.exceptions import DropItem
 
 from twisted.internet import defer, reactor, task
+from functools import partial
 
 vote_signal = object()
 vote_signal_defered = object()
@@ -26,17 +27,17 @@ class HooksasyncExtension(object):
         log.msg("my extension setting is %d" % setting)
         
         # connect the extension object to signals
-        crawler.signals.connect(lambda i: log.msg("HooksasyncExtension, signals.engine_started fired"), signal=signals.engine_started)
-        crawler.signals.connect(lambda i: log.msg("HooksasyncExtension, signals.engine_stopped fired"), signal=signals.engine_stopped)
-        crawler.signals.connect(lambda i: log.msg("HooksasyncExtension, signals.spider_opened fired"), signal=signals.spider_opened)
-        crawler.signals.connect(lambda i: log.msg("HooksasyncExtension, signals.spider_idle fired"), signal=signals.spider_idle)
-        crawler.signals.connect(lambda i: log.msg("HooksasyncExtension, signals.spider_closed fired"), signal=signals.spider_closed)
-        crawler.signals.connect(lambda i: log.msg("HooksasyncExtension, signals.spider_error fired"), signal=signals.spider_error)
-        crawler.signals.connect(lambda i: log.msg("HooksasyncExtension, signals.request_scheduled fired"), signal=signals.request_scheduled)
-        crawler.signals.connect(lambda i: log.msg("HooksasyncExtension, signals.response_received fired"), signal=signals.response_received)
-        crawler.signals.connect(lambda i: log.msg("HooksasyncExtension, signals.response_downloaded fired"), signal=signals.response_downloaded)
-        crawler.signals.connect(lambda i: log.msg("HooksasyncExtension, signals.item_scraped fired"), signal=signals.item_scraped)
-        crawler.signals.connect(lambda i: log.msg("HooksasyncExtension, signals.item_dropped fired"), signal=signals.item_dropped)
+        crawler.signals.connect(self.engine_started, signal=signals.engine_started)
+        crawler.signals.connect(self.engine_stopped, signal=signals.engine_stopped)
+        crawler.signals.connect(self.spider_opened, signal=signals.spider_opened)
+        crawler.signals.connect(self.spider_idle, signal=signals.spider_idle)
+        crawler.signals.connect(self.spider_closed, signal=signals.spider_closed)
+        crawler.signals.connect(self.spider_error, signal=signals.spider_error)
+        crawler.signals.connect(self.request_scheduled, signal=signals.request_scheduled)
+        crawler.signals.connect(self.response_received, signal=signals.response_received)
+        crawler.signals.connect(self.response_downloaded, signal=signals.response_downloaded)
+        crawler.signals.connect(self.item_scraped, signal=signals.item_scraped)
+        crawler.signals.connect(self.item_dropped, signal=signals.item_dropped)
         
         crawler.signals.connect(self.vote_signal1, signal=vote_signal)
         crawler.signals.connect(self.vote_signal2, signal=vote_signal)
@@ -44,6 +45,39 @@ class HooksasyncExtension(object):
         crawler.signals.connect(self.vote_signal1defered, signal=vote_signal_defered)
         crawler.signals.connect(self.vote_signal2defered, signal=vote_signal_defered)
         
+    def engine_started(self):
+        log.msg("HooksasyncExtension, signals.engine_started fired")
+        
+    def engine_stopped(self):
+        log.msg("HooksasyncExtension, signals.engine_stopped fired")
+        
+    def spider_opened(self, spider):
+        log.msg("HooksasyncExtension, signals.spider_opened fired")
+
+    def spider_idle(self, spider):
+        log.msg("HooksasyncExtension, signals.spider_idle fired")
+        
+    def spider_closed(self, spider, reason):
+        log.msg("HooksasyncExtension, signals.spider_closed fired")
+        
+    def spider_error(self, failure, response, spider):
+        log.msg("HooksasyncExtension, signals.spider_error fired")
+        
+    def request_scheduled(self, request, spider):
+        log.msg("HooksasyncExtension, signals.request_scheduled fired")
+        
+    def response_received(self, response, request, spider):
+        log.msg("HooksasyncExtension, signals.response_received fired")
+        
+    def response_downloaded(self, response, request, spider):
+        log.msg("HooksasyncExtension, signals.response_downloaded fired")
+        
+    def item_scraped(self, item, response, spider):
+        log.msg("HooksasyncExtension, signals.item_scraped fired")
+
+    def item_dropped(self, item, spider, exception):
+        log.msg("HooksasyncExtension, signals.item_dropped fired")
+
     def vote_signal1(self, item):
         log.msg("HooksasyncExtension, my vote_signal1 fired for item %s" % item['name'])
         return 5

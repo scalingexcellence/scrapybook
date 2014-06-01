@@ -12,8 +12,8 @@ class TestSpider(Spider):
     allowed_domains = ["example.com"]
     start_urls = (
         'http://www.example.com/?test=1',
-#        'http://www.example.com/?test=2',
-#        'http://www.example.com/?test=3',
+        'http://www.example.com/?test=2',
+        'http://www.example.com/?test=3',
         )
 
     def parse(self, response):
