@@ -8,7 +8,7 @@ from random import choice, randint
 engine = tenjin.Engine()
 
 tocreate = int(sys.argv[1])
-index_contains = 50
+index_contains = 30
 
 locations = filter(None, [line.strip() for line in open("locations.txt")])
 titles = filter(None, [line.strip() for line in open("titles.txt")])
@@ -24,13 +24,12 @@ for t in xrange(0,tocreate):
     location = choice(locations)
     title = create_sentence(titles)
     description = "\r\n".join([create_sentence(descriptions) for i in xrange(0,randint(1,5))])
-    price = ", price: %d" % randint(120, 400)
-    image = "images/i%02d.jpg" % randint(0,17)
+    price = str(randint(120, 400))
+    image = "../images/i%02d.jpg" % randint(0,17)
 
     item = {
         "description" : description,
         "title" : title,
-        "breadcrumbs" : [ location ],
         "price" : price,
         "address" : location,
         "image" : image,

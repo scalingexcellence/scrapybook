@@ -7,14 +7,10 @@
 <title>Scrapy Book Tutorial Example</title>
 </head>
 <body>
-  <h1 id="primary-h1"><span>${item['title']}</span><span><span>${item["price"]}</span></span></h1>
-  <p id="vip-description-text">${item['description']}</p>
-  <div id="gallery-item-mid-1"><a rel="nofollow"><img src="${item['image']}" alt="image" /></a></div>
-  <ul id="breadcrumbs">
-    <?py for b in item["breadcrumbs"]: ?>
-    <li><a rel="nofollow">${b}</a></li>
-    <?py #endfor ?>
-  </ul>
+  <h1>${item['title']}</h1>
+  <div class="ad-price">${item["price"]}</div>
+  <p id="ad-description">${item['description']}</p>
+  <div><img src="${item['image']}" alt="image" itemprop="image" /></div>
   <div class="ad-location">${item['address']}</div>
   <p>Example property. For more information: <a href="http://scrapybook.com">scrapybook.com</a></p>
 </body>
