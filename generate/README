@@ -6,46 +6,7 @@ mongo --quiet scrapy_lon titles.js > titles.txt
 
 ** Generating
 
-./create.py 150
-
-** Testing outputs:
-
-scrapy shell properties/property_000000.html
-
-import re
-pretty_extract = lambda x: "\n".join(x.extract()).strip()
-item={}
-item['title'      ] = pretty_extract(hxs.select('//*[@id="primary-h1"]/span[1]/text()'     ))
-item['price'      ] = pretty_extract(hxs.select('//*[@id="primary-h1"]/span[2]/span/text()'))
-item['description'] = pretty_extract(hxs.select('//*[@id="vip-description-text"]/text()'   ))
-item['image'      ] = pretty_extract(hxs.select('//*[@id="gallery-item-mid-1"]/a/img/@src' ))
-item['breadcrumbs'] = hxs.select('//*[@id="breadcrumbs"]/li/a/text()').extract()
-item['url'        ] = response.url
-item['website'    ] = "Gumtree"
-item['address'    ] = pretty_extract(hxs.select('//*[@class="ad-location"]/text()'         ))
-item['price'] = float(re.sub("[^0-9]", "", item['price'])) / (4.3 if item['price'].endswith("pm") else 1)
-
-
-scrapy shell properties/index_00000.html
-
-
-hxs.select('//*[@class="description"]/@href').extract()
-hxs.select('//*[@class="ad-title-text"]//text()').extract()
-hxs.select('//*[@class="price"]/text()').extract()
-hxs.select('//*[@class="location"]/text()').extract()
-
-hxs.select('//li[contains(@class,"hlisting")]')[0].select('.//*[@class="description"]/@href').extract()
-hxs.select('//li[contains(@class,"hlisting")]')[0].select('.//*[@class="ad-title-text"]//text()').extract()
-hxs.select('//li[contains(@class,"hlisting")]')[0].select('.//*[@class="price"]/text()').extract()
-hxs.select('//li[contains(@class,"hlisting")]')[0].select('.//*[@class="location"]/text()').extract()
-
-hxs.select('//*[@id="pagination"]/ul/li/a').extract()
-
-** Publishing internaly
-
-rm -rf /var/www/properties 
-cp -r images     properties/images
-cp -r properties /var/www/properties
+./create.py 50000
 
 ** Uploading to S3
 
@@ -62,11 +23,13 @@ cat lsres2.txt | xargs -P 40 -n 1 s3cmd del
 
 scrapy shell https://s3.amazonaws.com/scrapybook/properties/index_00000.html
 
-open('api.json', 'w').write(json.dumps(map(lambda s: {"title": s[0], "id": s[1]}, zip(hxs.select('//*[@class="ad-title-text"]//text()').extract(),range(0,50)))))
+>>> import json
+>>> open('api.json', 'w').write(json.dumps(map(lambda s: {"title": s[0], "id": s[1]}, zip(sel.xpath('.//*[contains(@class,"listing-title")]/text()').extract(),range(0,50)))))
 
-Finally upload:
+Upload:
 
 s3cmd put --acl-public --guess-mime-type api.json s3://scrapybook/properties/api.json
 
+** Upload images
 
-
+find images -type f | xargs -P 40 -n 1 ./file_to_s3.sh scrapybook

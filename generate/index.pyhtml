@@ -1,31 +1,31 @@
 <?py # -*- coding: utf-8 -*- ?>
 <?py #@ARGS page, nextp, links ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!DOCTYPE html>
+<html>
 <head>
-<meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
+<meta charset="UTF-8">
 <title>Scrapy Book Tutorial Example</title>
-<style>
+<style type="text/css">
 a {text-decoration:none;}
-.listing-description { font-size: 7px }
+.listing-description { font-size: 7px; display:block; }
 </style>
 </head>
 <body>
   <h1>Page ${page}</h1>
   <ul>
     <?py for item in its: ?>
-    <li class="listing-maxi">
+    <li class="listing-maxi" itemscope>
       <a class="listing-link" href="${item['link']}">
-      <img itemprop="image" src="${item['image']}" width="15" height="15" />
+      <img itemprop="image" src="${item['image']}" width="15" height="15" alt="thumb" />
       <span class="listing-title">${item['title']}</span>, price: <span class="listing-price">${item['price']}</span>
       location: <span class="listing-location"><span>${item['address']}</span></span>
-      <div class="listing-description">${item['description']}</div>
+      <span class="listing-description">${item['description']}</span>
       </a>
     </li>
     <?py #endfor ?>
   </ul>
   <?py if nextp: ?>
-  <div id="pagination"><ul><li><a href="${nextp}" rel="nofollow">next</a></li></ul></div>
+  <ul><li class="next"><a href="${nextp}" rel="nofollow">next</a></li></ul>
   <?py #endif ?>
   <p>Example index page. For more information: <a href="http://scrapybook.com">scrapybook.com</a></p>
 </body>
