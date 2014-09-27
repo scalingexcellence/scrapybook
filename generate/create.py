@@ -24,7 +24,7 @@ for t in xrange(0,tocreate):
     location = choice(locations)
     title = create_sentence(titles)
     description = "\r\n".join([create_sentence(descriptions) for i in xrange(0,randint(1,5))])
-    price = str(randint(120, 400))
+    price = str(float(randint(12000, 40000))/100)
     image = "../images/i%02d.jpg" % randint(0,17)
 
     item = {

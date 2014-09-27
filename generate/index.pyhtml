@@ -14,12 +14,12 @@ a {text-decoration:none;}
   <h1>Page ${page}</h1>
   <ul>
     <?py for item in its: ?>
-    <li class="listing-maxi" itemscope>
-      <a class="listing-link" href="${item['link']}">
+    <li class="listing-maxi" itemscope itemtype="http://schema.org/Product">
+      <a class="listing-link" itemprop="url" href="${item['link']}">
       <img itemprop="image" src="${item['image']}" width="15" height="15" alt="thumb" />
-      <span class="listing-title">${item['title']}</span>, price: <span class="listing-price">${item['price']}</span>
-      location: <span class="listing-location"><span>${item['address']}</span></span>
-      <span class="listing-description">${item['description']}</span>
+      <span class="listing-title" itemprop="name">${item['title']}</span>, price: <span itemprop="price">£${item['price']}pw</span>
+      location: <span itemscope itemtype="http://schema.org/Place"><span>${item['address']}</span></span>
+      <span class="listing-description" itemprop="description">${item['description']}</span>
       </a>
     </li>
     <?py #endfor ?>
