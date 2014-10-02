@@ -9,15 +9,15 @@ from scrapy.contrib.linkextractors.sgml import SgmlLinkExtractor
 
 class BasicSpider(scrapy.Spider):
     name = "basic"
-    allowed_domains = ["s3.amazonaws.com"]
+    allowed_domains = ["scrapybook.s3.amazonaws.com"]
     start_urls = (
-        'http://s3.amazonaws.com/scrapybook/properties/property_000000.html',
+        'http://scrapybook.s3.amazonaws.com/properties/property_000000.html',
     )
 
     def parse(self, response):
         """ This function parses a property page.
 
-        @url http://s3.amazonaws.com/scrapybook/properties/property_000000.html
+        @url http://scrapybook.s3.amazonaws.com/properties/property_000000.html
         @returns items 1
         @scrapes title price description address image_urls
         @scrapes url project spider server date

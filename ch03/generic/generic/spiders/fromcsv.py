@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 import scrapy
 import csv
-from scrapy.contrib.loader import ItemLoader
 from scrapy.http import Request
+from scrapy.contrib.loader import ItemLoader
 from scrapy.item import Item, Field
 
 
@@ -21,8 +21,8 @@ class FromcsvSpider(scrapy.Spider):
         item = Item()
         l = ItemLoader(item=item, response=response)
         for name, xpath in response.meta['fields'].iteritems():
-            item.fields[name] = Field()
             if xpath:
+                item.fields[name] = Field()
                 l.add_xpath(name, xpath)
 
         return l.load_item()
