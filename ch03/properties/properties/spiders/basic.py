@@ -1,15 +1,17 @@
-import scrapy
-import socket
-import datetime
-from properties.items import PropertiesItem
-from scrapy.contrib.loader import ItemLoader
 from scrapy.contrib.loader.processor import MapCompose, Join
-from scrapy.contrib.linkextractors.sgml import SgmlLinkExtractor
+from scrapy.contrib.loader import ItemLoader
+from properties.items import PropertiesItem
+import datetime
+import urlparse
+import socket
+import scrapy
 
 
 class BasicSpider(scrapy.Spider):
     name = "basic"
     allowed_domains = ["scrapybook.s3.amazonaws.com"]
+    
+    # Start on a property page
     start_urls = (
         'http://scrapybook.s3.amazonaws.com/properties/property_000000.html',
     )
@@ -28,22 +30,20 @@ class BasicSpider(scrapy.Spider):
 
         # Load fields using XPath expressions
         l.add_xpath('title', '//*[@itemprop="name"][1]/text()',
-                             MapCompose(unicode.strip, unicode.title))
-        l.add_xpath('price', '//*[@itemprop="price"][1]/text()',
-                             MapCompose(float), re='[.0-9]+')
+                    MapCompose(unicode.strip, unicode.title))
+        l.add_xpath('price', './/*[@itemprop="price"][1]/text()',
+                    MapCompose(lambda p: p.replace(',', ''), float),
+                    re='[,.0-9]+')
         l.add_xpath('description', '//*[@itemprop="description"][1]/text()',
-                                   MapCompose(unicode.strip), Join())
+                    MapCompose(unicode.strip), Join())
         l.add_xpath('address',
                     '//*[@itemtype="http://schema.org/Place"][1]/text()',
                     MapCompose(unicode.strip))
-
-        # In case of images, use an SgmlLinkExtractor to extract URLs
-        image_extractor = SgmlLinkExtractor(
-            restrict_xpaths=('//*[@itemprop="image"][1]',),
-            tags=('img'), attrs=('src'), deny_extensions=())
-
-        l.add_value('image_urls', image_extractor.extract_links(response),
-                    MapCompose(lambda link: link.url))
+        l.add_xpath('image_urls',
+                    '//*[@itemprop="image" '
+                    'and string-length(@src)>0][1]/@src',
+                    MapCompose(lambda rel: urlparse.urljoin(response.url, rel))
+                    )
 
         # Housekeeping fields
         l.add_value('url', response.url)
