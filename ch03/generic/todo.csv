@@ -1,0 +1,4 @@
+url,name,price
+http://scrapybook.s3.amazonaws.com/generic/a.html,"//*[@id=""itemTitle""]/text()","//*[@id=""prcIsum""]/text()"
+http://scrapybook.s3.amazonaws.com/generic/b.html,//h1/text(),//span/strong/text()
+http://scrapybook.s3.amazonaws.com/generic/c.html,"//*[@id=""product-desc""]/span/text()",
