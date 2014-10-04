@@ -33,9 +33,9 @@ class FastSpider(CrawlSpider):
         selectors = response.xpath(
             '//*[@itemtype="http://schema.org/Product"]')
         for selector in selectors:
-            yield self.parse_single_item(selector, response.url)
+            yield self.parse_single_item(selector, response)
 
-    def parse_single_item(self, selector, url):
+    def parse_single_item(self, selector, response):
         # Create the loader using the selector
         l = ItemLoader(item=PropertiesItem(), selector=selector)
 
@@ -43,25 +43,22 @@ class FastSpider(CrawlSpider):
         l.add_xpath('title', './/*[@itemprop="name"][1]/text()',
                     MapCompose(unicode.strip, unicode.title))
         l.add_xpath('price', './/*[@itemprop="price"][1]/text()',
-                    MapCompose(lambda p: p.replace(',', ''), float),
+                    MapCompose(lambda i: i.replace(',', ''), float),
                     re='[,.0-9]+')
         l.add_xpath('description', './/*[@itemprop="description"][1]/text()',
                     MapCompose(unicode.strip), Join())
         l.add_xpath('address',
                     './/*[@itemtype="http://schema.org/Place"][1]/*/text()',
                     MapCompose(unicode.strip))
-        l.add_xpath('image_urls',
-                    './/*[@itemprop="image" '
-                    'and string-length(@src)>0][1]/@src',
-                    MapCompose(lambda rel: urlparse.urljoin(url, rel)))
+        l.add_xpath('image_urls', './/*[@itemprop="image"][1]/@src',
+                    MapCompose(lambda i: urlparse.urljoin(response.url, i)))
 
         # Housekeeping fields
-        l.add_xpath('url',
-                    './/*[@itemprop="url"][1]/@href',
-                    MapCompose(lambda rel: urlparse.urljoin(url, rel)))
+        l.add_xpath('url', './/*[@itemprop="url"][1]/@href',
+                    MapCompose(lambda i: urlparse.urljoin(response.url, i)))
         l.add_value('project', self.settings.get('BOT_NAME'))
         l.add_value('spider', self.name)
-        l.add_value('server', (lambda h: h + ' (' + socket.gethostbyname(h) +
+        l.add_value('server', (lambda i: i + ' (' + socket.gethostbyname(i) +
                                              ')')(socket.gethostname()))
         l.add_value('date', datetime.datetime.now())
 

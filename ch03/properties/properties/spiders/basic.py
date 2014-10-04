@@ -10,7 +10,7 @@ import scrapy
 class BasicSpider(scrapy.Spider):
     name = "basic"
     allowed_domains = ["scrapybook.s3.amazonaws.com"]
-    
+
     # Start on a property page
     start_urls = (
         'http://scrapybook.s3.amazonaws.com/properties/property_000000.html',
@@ -32,24 +32,21 @@ class BasicSpider(scrapy.Spider):
         l.add_xpath('title', '//*[@itemprop="name"][1]/text()',
                     MapCompose(unicode.strip, unicode.title))
         l.add_xpath('price', './/*[@itemprop="price"][1]/text()',
-                    MapCompose(lambda p: p.replace(',', ''), float),
+                    MapCompose(lambda i: i.replace(',', ''), float),
                     re='[,.0-9]+')
         l.add_xpath('description', '//*[@itemprop="description"][1]/text()',
                     MapCompose(unicode.strip), Join())
         l.add_xpath('address',
                     '//*[@itemtype="http://schema.org/Place"][1]/text()',
                     MapCompose(unicode.strip))
-        l.add_xpath('image_urls',
-                    '//*[@itemprop="image" '
-                    'and string-length(@src)>0][1]/@src',
-                    MapCompose(lambda rel: urlparse.urljoin(response.url, rel))
-                    )
+        l.add_xpath('image_urls', '//*[@itemprop="image"][1]/@src',
+                    MapCompose(lambda i: urlparse.urljoin(response.url, i)))
 
         # Housekeeping fields
         l.add_value('url', response.url)
         l.add_value('project', self.settings.get('BOT_NAME'))
         l.add_value('spider', self.name)
-        l.add_value('server', (lambda h: h + ' (' + socket.gethostbyname(h) +
+        l.add_value('server', (lambda i: i + ' (' + socket.gethostbyname(i) +
                                              ')')(socket.gethostname()))
         l.add_value('date', datetime.datetime.now())
 
