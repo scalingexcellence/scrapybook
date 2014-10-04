@@ -1,14 +1,14 @@
 from scrapy.contrib.loader.processor import MapCompose, Join
-from scrapy.contrib.linkextractors import LinkExtractor
-from scrapy.contrib.spiders import CrawlSpider, Rule
 from scrapy.contrib.loader import ItemLoader
 from properties.items import PropertiesItem
+from scrapy.http import Request
 import datetime
 import urlparse
 import socket
+import scrapy
 
 
-class FastSpider(CrawlSpider):
+class BasicSpider(scrapy.Spider):
     name = 'fast'
     allowed_domains = ['scrapybook.s3.amazonaws.com']
 
@@ -16,18 +16,12 @@ class FastSpider(CrawlSpider):
     start_urls = ['http://scrapybook.s3.amazonaws.com/'
                   'properties/index_00000.html']
 
-    # Jump from one index page to the next one
-    rules = (
-        Rule(LinkExtractor(
-            restrict_xpaths=('//*[contains(@class,"next")]/a',)),
-            callback='parse_item', follow=True),
-    )
+    def parse(self, response):
+        # Get the next index URLs and yield Requests
+        next_selector = response.xpath('//*[contains(@class,"next")]//@href')
+        for url in next_selector.extract():
+            yield Request(urlparse.urljoin(response.url, url))
 
-    def parse_start_url(self, response):
-        # Parse the first URL in the same way as all the rest
-        return self.parse_item(response)
-
-    def parse_item(self, response):
         # Iterate through products and create PropertiesItems
         selectors = response.xpath(
             '//*[@itemtype="http://schema.org/Product"]')
