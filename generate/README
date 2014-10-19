@@ -31,3 +31,8 @@ s3cmd put --acl-public --guess-mime-type api.json s3://scrapybook/properties/api
 ** Upload images
 
 find images -type f | xargs -P 40 -n 1 ./file_to_s3.sh scrapybook
+
+** Upload index
+
+s3cmd put --acl-public --guess-mime-type index.html s3://scrapybook
+

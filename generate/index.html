@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Scrapy Book Tutorial Example</title>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script type="text/javascript">
+//<![CDATA[
+$(function() {
+	$.getJSON( "api.json", function( data ) {
+		var ul = $('<ul/>');
+		$.each(data, function( key, val ) {
+			var link = $('<a />');
+			link.text(val.title);
+			var id = "000000" + val.id;
+			link.attr("href", "properties/property_"+id.substr(id.length-6)+".html")
+			var li = $('<li/>');
+			li.append(link);
+			ul.append(li);
+		});
+		ul.prependTo("body");
+	});
+});
+//]]>
+</script>
+</head>
+<body>
+  <p>Example index page. For more information: <a href="http://scrapybook.com">scrapybook.com</a></p>
+</body>
+</html>
