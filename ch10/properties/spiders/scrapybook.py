@@ -69,8 +69,7 @@ class ScrapybookSpider(CrawlSpider):
         item['url'] = response.url
         item['project'] = self.settings.get('BOT_NAME')
         item['spider'] = self.name
-        hn = socket.gethostname()
-        item['server'] = u"%s (%s)" % (hn, socket.gethostbyname(hn))
+        item['server'] = socket.gethostname()
         item['date'] = datetime.datetime.now()
         return item
         

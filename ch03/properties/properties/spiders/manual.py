@@ -59,8 +59,7 @@ class BasicSpider(scrapy.Spider):
         l.add_value('url', response.url)
         l.add_value('project', self.settings.get('BOT_NAME'))
         l.add_value('spider', self.name)
-        l.add_value('server', (lambda i: i + ' (' + socket.gethostbyname(i) +
-                                             ')')(socket.gethostname()))
+        l.add_value('server', socket.gethostname())
         l.add_value('date', datetime.datetime.now())
 
         return l.load_item()

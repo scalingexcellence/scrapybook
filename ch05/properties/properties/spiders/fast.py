@@ -51,8 +51,7 @@ class BasicSpider(scrapy.Spider):
                     MapCompose(lambda i: urlparse.urljoin(response.url, i)))
         l.add_value('project', self.settings.get('BOT_NAME'))
         l.add_value('spider', self.name)
-        l.add_value('server', (lambda i: i + ' (' + socket.gethostbyname(i) +
-                                             ')')(socket.gethostname()))
+        l.add_value('server', socket.gethostname())
         l.add_value('date', datetime.datetime.now())
 
         return l.load_item()

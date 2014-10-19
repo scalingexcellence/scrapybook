@@ -34,7 +34,8 @@ class BatchToScrapyd(object):
     @classmethod
     def from_crawler(cls, crawler):
         # instantiate the extension object
-        host = socket.gethostbyname(socket.gethostname())
+        assert(False) # this value for host doesn't work always
+        #host = socket.gethostbyname(socket.gethostname())
         ext = cls(
             crawler.settings.get('DIST_WORKERS', "workers.txt"),
             crawler.settings.get('BOT_NAME'),
