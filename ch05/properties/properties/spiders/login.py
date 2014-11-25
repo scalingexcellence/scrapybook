@@ -2,20 +2,24 @@ from scrapy.contrib.loader.processor import MapCompose, Join
 from scrapy.contrib.linkextractors import LinkExtractor
 from scrapy.contrib.spiders import CrawlSpider, Rule
 from scrapy.contrib.loader import ItemLoader
+from scrapy.http import FormRequest
 from properties.items import PropertiesItem
 import datetime
 import urlparse
 import socket
 
 
-class ToMobileSpider(CrawlSpider):
-    name = 'tomobile'
+class LoginSpider(CrawlSpider):
+    name = 'login'
     allowed_domains = ["scrapybook.s3.amazonaws.com"]
 
-    # Start on the first index page
-    start_urls = (
-        'http://scrapybook.s3.amazonaws.com/properties/index_00000.html',
-    )
+    # Start with a login request
+    def start_requests(self):
+        return [
+            FormRequest(
+                "http://examples.scrapybook.com/post/login.php",
+                formdata={"user": "user", "pass": "pass"}
+            )]
 
     # Rules for horizontal and vertical crawling
     rules = (

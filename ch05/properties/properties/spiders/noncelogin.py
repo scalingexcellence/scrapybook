@@ -2,20 +2,32 @@ from scrapy.contrib.loader.processor import MapCompose, Join
 from scrapy.contrib.linkextractors import LinkExtractor
 from scrapy.contrib.spiders import CrawlSpider, Rule
 from scrapy.contrib.loader import ItemLoader
+from scrapy.http import Request, FormRequest
 from properties.items import PropertiesItem
 import datetime
 import urlparse
 import socket
 
 
-class ToMobileSpider(CrawlSpider):
-    name = 'tomobile'
+class NonceLoginSpider(CrawlSpider):
+    name = 'noncelogin'
     allowed_domains = ["scrapybook.s3.amazonaws.com"]
 
-    # Start on the first index page
-    start_urls = (
-        'http://scrapybook.s3.amazonaws.com/properties/index_00000.html',
-    )
+    # Start on the welcome page
+    def start_requests(self):
+        return [
+            Request(
+                "http://examples.scrapybook.com/post/nonce.php",
+                callback=self.parse_welcome)
+        ]
+
+    # Post welcome page's first form with the given user/pass
+    def parse_welcome(self, response):
+        return FormRequest.from_response(
+            response,
+            formdata={"user": "user", "pass": "pass"},
+            dont_filter=True
+        )
 
     # Rules for horizontal and vertical crawling
     rules = (
