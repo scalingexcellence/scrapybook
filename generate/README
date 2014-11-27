@@ -22,7 +22,7 @@ cat lsres2.txt | xargs -P 40 -n 1 s3cmd del
 scrapy shell https://s3.amazonaws.com/scrapybook/properties/index_00000.html
 
 >>> import json
->>> open('api.json', 'w').write(json.dumps(map(lambda s: {"title": s[0], "id": s[1]}, zip(response.xpath('.//*[contains(@class,"listing-title")]/text()').extract(),range(0,50)))))
+>>> open('api.json', 'w').write(json.dumps(map(lambda s: {"title": "better %s" % s[0], "id": s[1]}, zip(response.xpath('.//*[contains(@class,"listing-title")]/text()').extract(),range(0,30)))))
 
 Upload:
 
