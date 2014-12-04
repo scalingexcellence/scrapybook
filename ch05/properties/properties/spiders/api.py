@@ -18,7 +18,7 @@ class ApiSpider(scrapy.Spider):
         'http://scrapybook.s3.amazonaws.com/properties/api.json',
     )
 
-    # Post welcome page's first form with the given user/pass
+    # Format the URLs based on the API call response
     def parse(self, response):
         base_url = "http://scrapybook.s3.amazonaws.com/properties/"
         js = json.loads(response.body)
