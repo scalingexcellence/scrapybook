@@ -9,7 +9,7 @@ class FromcsvSpider(scrapy.Spider):
     name = "fromcsv"
 
     def start_requests(self):
-        with open(getattr(self, "file", "todo.csv"), "rb") as f:
+        with open(getattr(self, "file", "todo.csv"), "rU") as f:
             reader = csv.DictReader(f)
             for line in reader:
                 request = Request(line.pop('url'))
