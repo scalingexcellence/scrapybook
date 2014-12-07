@@ -1,7 +1,7 @@
 scrapybook
 ==========
 
-O'Reilly Scrapy Book Tutorial Code
+Scrapy Book Code [Tutorial]
 
 see also: [on the official website](http://scrapybook.com)
 
