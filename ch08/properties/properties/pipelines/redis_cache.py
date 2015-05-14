@@ -39,7 +39,7 @@ class RedisCache(object):
     @defer.inlineCallbacks
     def process_item(self, item, spider):
         
-        if "location" in item:
+        if "geo_addr" in item:
             defer.returnValue(item)
             return
             
@@ -52,21 +52,21 @@ class RedisCache(object):
         
         try:
             # Is it in local cache?
-            if self.cache.get(address, None) is not None:
-                # Success
-                item["location"] = self.cache[address][0]
-                item["geo_addr"] = self.cache[address][1]
-            else:
-                # If not, retrieve value from Redis
+            found = True
+            if self.cache.get(address, None) is None:
+                # No. Retrieve value from Redis
                 str_value = yield self.connection.get(address)
                 if str_value:
                     # Decode the redis value from string
                     location_info = json.loads(str_value)
                     # Save in local cache too
                     self.cache[address] = location_info
-                    # Set item's values
-                    item["location"] = self.cache[address][0]
-                    item["geo_addr"] = self.cache[address][1]
+                else:
+                    found = False
+            
+            if found:
+                # Set item's values
+                item["geo_addr"] = self.cache[address]
             
         except txredisapi.ConnectionError:
             # Set the level appropriately according to the importance
@@ -87,7 +87,7 @@ class RedisCache(object):
             address = item["address"][0]
             
             old_value = self.cache.get(address, None)
-            new_value = [item["location"], item["geo_addr"]]
+            new_value = item["geo_addr"]
             
             # Do we have an update?
             if  old_value != new_value:
@@ -96,7 +96,7 @@ class RedisCache(object):
                 self.cache[address] = new_value
 
                 # Encode the value
-                str_value = json.dumps(self.cache[address])
+                str_value = json.dumps(new_value)
 
                 # Store it in redis asynchronously
                 d = self.connection.set(address, str_value)
@@ -105,7 +105,7 @@ class RedisCache(object):
                 return d
         
         except KeyError:
-            pass # This is ok. location/geo_addr not set for item
+            pass # This is ok. geo_addr not set for item
 
     @staticmethod
     def parse_redis_url(redis_url):

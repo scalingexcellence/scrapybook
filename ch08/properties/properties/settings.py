@@ -16,12 +16,12 @@ NEWSPIDER_MODULE = 'properties.spiders'
 #USER_AGENT = 'properties (+http://www.yourdomain.com)'
 
 ITEM_PIPELINES = {
-    'properties.pipelines.geo_pipeline.GeoPipeline': 300,
     'properties.pipelines.redis_cache.RedisCache': 200,
+    'properties.pipelines.geo_pipeline.GeoPipeline': 300,
 }
 
 import os
 REDIS_PIPELINE_URL = os.environ.get('REDIS_PIPELINE_URL', 'redis://192.168.59.103:6379')
 
-#CLOSESPIDER_PAGECOUNT = 2
+#CLOSESPIDER_ITEMCOUNT = 5
 LOG_LEVEL = "INFO"
