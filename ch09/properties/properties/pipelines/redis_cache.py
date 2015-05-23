@@ -35,11 +35,14 @@ class RedisCache(object):
         
         # Create an empty local cache
         self.cache = {}
+        
+        # A method used to report errors
+        self.report = log.err
             
     @defer.inlineCallbacks
     def process_item(self, item, spider):
         
-        if "geo_addr" in item:
+        if "location" in item:
             defer.returnValue(item)
             return
             
@@ -66,13 +69,13 @@ class RedisCache(object):
             
             if found:
                 # Set item's values
-                item["geo_addr"] = self.cache[address]
+                item["location"] = self.cache[address]
             
         except txredisapi.ConnectionError:
             # Set the level appropriately according to the importance
             # of Redis caching for your application
-            log.msg(format="Can't open connection to redis server: %(redis_url)s",
-                redis_url = self.redis_url, level=log.DEBUG)
+            self.report("Can't open connection to redis server: %s" % self.redis_url)
+            self.report = lambda _: None # Deactivate further logging
         
         defer.returnValue(item)
 
@@ -87,7 +90,7 @@ class RedisCache(object):
             address = item["address"][0]
             
             old_value = self.cache.get(address, None)
-            new_value = item["geo_addr"]
+            new_value = item["location"]
             
             # Do we have an update?
             if  old_value != new_value:
@@ -105,7 +108,7 @@ class RedisCache(object):
                 return d
         
         except KeyError:
-            pass # This is ok. geo_addr not set for item
+            pass # This is ok. location not set for item
 
     @staticmethod
     def parse_redis_url(redis_url):

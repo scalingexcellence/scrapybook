@@ -1,0 +1,75 @@
+-- Get a VM
+ssh root@134.213.149.79
+root
+MfHbeXWRP2C2
+
+-- Install docker and test
+wget -qO- https://get.docker.com/ | sh
+sudo docker run hello-world
+docker ps -a
+
+-- Run mysql on docker
+sudo docker run -d -p 3306:3306 --name mysql -e MYSQL_ROOT_PASSWORD=123 mysql
+
+-- Installing mysql client and test
+mysql -uroot -p123 --protocol=tcp -hlocalhost -P3306 -Dsomedb
+sudo apt-get install mysql-client-core-5.6
+
+-- Run redis on docker
+sudo docker run -p 6379:6379 --name redis -d redis
+
+-- Installing Redis client and test
+sudo apt-get install redis-tools
+redis-cli 
+
+-- Installing Twisted
+Twisted installation following https://github.com/cyli/docker-twisted/blob/master/Dockerfile
+
+sudo apt-get -y install -q build-essential python-dev libffi-dev libssl-dev python-pip
+sudo pip install service_identity pycrypto
+sudo pip install twisted
+
+test:
+
+cd server
+twistd -n web
+
+Check on a browser: 134.213.149.79:8080
+
+-- Install Scrapy
+
+sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 627220E7
+echo 'deb http://archive.scrapy.org/ubuntu scrapy main' | sudo tee /etc/apt/sources.list.d/scrapy.list
+sudo apt-get update && sudo apt-get install scrapy-0.24
+
+-- Clone the app
+
+git clone git@bitbucket.org:lookfwd/scrapyasync.git
+
+
+-- Start the server
+
+server/server.py &
+
+-- Crawl the website
+
+cd client
+time scrapy crawl toy -L INFO
+
+
+
+
+
+
+
+To run ./server.py and then go to http://134.213.149.79/
+
+
+Just run with:
+
+time scrapy crawl toy -L INFO
+
+You can change the total number of items we request by changing the "limit" parameter in the starting url
+
+You can change the delays for index pages and detail pages by using the index_delay and detail_delay arguments in the starting url
+

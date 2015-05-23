@@ -11,7 +11,7 @@ class PropertiesItem(Item):
 
     # Calculated fields
     images = Field()
-    geo_addr = Field()
+    location = Field()
 
     # Housekeeping fields
     url = Field()

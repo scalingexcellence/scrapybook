@@ -15,7 +15,7 @@ class GeoPipeline(object):
         
         self.cache = {}
         self.stats = stats
-        
+
     @defer.inlineCallbacks
     def process_item(self, item, spider):
         """
@@ -31,13 +31,13 @@ class GeoPipeline(object):
         address = item["address"][0]
         
         try:
-            if "geo_addr" in item:
+            if "location" in item:
                 # Set by previous step (spider or pipeline). Don't do anything
                 # apart from increasing stats
                 self.stats.inc_value('geo_pipeline/already_set', spider=spider)
             else:
                 # Try to use local cache
-                item["geo_addr"] = self.cache[address]
+                item["location"] = self.cache[address]
                 
                 # Increase the stats
                 self.stats.inc_value('geo_pipeline/cache_hit', spider=spider)
@@ -59,10 +59,10 @@ class GeoPipeline(object):
                 
                 # Extract the address and geo-point and set item's fields
                 geo = content['results'][0]["geometry"]["location"]
-                item["geo_addr"] = {"lat": geo["lat"], "lon": geo["lng"]}
+                item["location"] = {"lat": geo["lat"], "lon": geo["lng"]}
                 
                 # Cache the results
-                self.cache[address] = item["geo_addr"]
+                self.cache[address] = item["location"]
                 
                 # Increase the stats
                 self.stats.inc_value('geo_pipeline/cache_miss', spider=spider)
@@ -71,7 +71,7 @@ class GeoPipeline(object):
                 # Increase the stats
                 self.stats.inc_value('geo_pipeline/error', spider=spider)
                 
-                item["geo_addr"] = {"lat": 0, "lon": 0}
+                item["location"] = {"lat": 0, "lon": 0}
                 
                 # Intentionally raise these to keep them visible. if it
                 # can't find content['results'][0]["formatted_address"]

@@ -9,7 +9,7 @@ class MysqlWriter(object):
 
     @classmethod
     def from_crawler(cls, crawler):
-        # Get redis URL
+        # Get MySQL URL
         mysql_url = crawler.settings.get('MYSQL_PIPELINE_URL', None)
         
         # If doesn't exist, disable
