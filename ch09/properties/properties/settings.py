@@ -18,8 +18,9 @@ NEWSPIDER_MODULE = 'properties.spiders'
 ITEM_PIPELINES = {
     'properties.pipelines.redis_cache.RedisCache': 200,
     'properties.pipelines.geo_pipeline.GeoPipeline': 300,
-#    'properties.pipelines.mysql_writer.MysqlWriter': 400,
-    'properties.pipelines.es.EsWriter': 500,
+#    'properties.pipelines.legacy.Pricing': 400,
+#    'properties.pipelines.mysql_writer.MysqlWriter': 500,
+#    'properties.pipelines.es.EsWriter': 600,
 }
 
 import os
@@ -27,5 +28,5 @@ REDIS_PIPELINE_URL = os.environ.get('REDIS_PIPELINE_URL', 'redis://192.168.59.10
 MYSQL_PIPELINE_URL = os.environ.get('MYSQL_PIPELINE_URL', 'mysql://root:123@192.168.59.103/properties')
 ES_PIPELINE_URL = os.environ.get('ES_PIPELINE_URL', 'http://192.168.59.103:9200/properties/property')
 
-#CLOSESPIDER_ITEMCOUNT = 5
+CLOSESPIDER_ITEMCOUNT = 900
 LOG_LEVEL = "INFO"
