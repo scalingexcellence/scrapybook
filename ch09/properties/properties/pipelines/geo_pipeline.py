@@ -6,7 +6,7 @@ class GeoPipeline(object):
 
     @classmethod
     def from_crawler(cls, crawler):
-        """Create a new isntance and pass it crawler's stats object"""
+        """Create a new instance and pass it crawler's stats object"""
         
         return cls(crawler.stats)
         
@@ -20,7 +20,7 @@ class GeoPipeline(object):
     def process_item(self, item, spider):
         """
         Pipeline's main method. Uses inlineCallbacks to do
-        asynchronous requests
+        asynchronous REST requests
         """
         
         # The item has to have the address field set

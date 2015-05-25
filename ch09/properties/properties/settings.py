@@ -21,7 +21,7 @@ ITEM_PIPELINES = {
 #    'properties.pipelines.computation.MultiThreads': 400,
 #    'properties.pipelines.legacy.Pricing': 500,
 #    'properties.pipelines.mysql_writer.MysqlWriter': 600,
-#    'properties.pipelines.es.EsWriter': 700,
+    'properties.pipelines.es.EsWriter': 700,
 }
 
 import os
@@ -30,4 +30,5 @@ MYSQL_PIPELINE_URL = os.environ.get('MYSQL_PIPELINE_URL', 'mysql://root:123@192.
 ES_PIPELINE_URL = os.environ.get('ES_PIPELINE_URL', 'http://192.168.59.103:9200/properties/property')
 
 #CLOSESPIDER_ITEMCOUNT = 900
+LOGSTATS_INTERVAL=2
 LOG_LEVEL = "INFO"
