@@ -1,6 +1,5 @@
 import json
 import traceback
-from datetime import datetime
 from collections import OrderedDict
 
 from treq import put
@@ -32,17 +31,6 @@ class EsWriter(object):
         self.es_url = es_url
         self.report = log.err
 
-    @staticmethod
-    def item_to_json(item):
-        # Item isn't JSON serializable. OrderedDict(item) is
-        document = OrderedDict(item)
-
-        # Make the date JSON serializable by converting it to isoformat
-        document['date'] = map(datetime.isoformat, document['date'])
-
-        # Format as a JSON object
-        return json.dumps(document, ensure_ascii=False, sort_keys=False)
-
     @defer.inlineCallbacks
     def process_item(self, item, spider):
         """
@@ -51,7 +39,7 @@ class EsWriter(object):
         """
         try:
             # Create a json representation of this item
-            json_doc = EsWriter.item_to_json(item)
+            json_doc = json.dumps(dict(item), ensure_ascii=False)
 
             # Extract the ID (it's the URL)
             id = item['url'][0]
