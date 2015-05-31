@@ -18,16 +18,16 @@ NEWSPIDER_MODULE = 'properties.spiders'
 ITEM_PIPELINES = {
     'properties.pipelines.tidyup.TidyUp': 100,
 #    'properties.pipelines.redis_cache.RedisCache': 200,
-    'properties.pipelines.geo_pipeline.GeoPipeline': 300,
+    'properties.pipelines.geo.GeoPipeline': 300,
 #    'properties.pipelines.computation.MultiThreads': 400,
 #    'properties.pipelines.legacy.Pricing': 500,
-#    'properties.pipelines.mysql_writer.MysqlWriter': 600,
+    'properties.pipelines.mysql.MysqlWriter': 600,
     'properties.pipelines.es.EsWriter': 700,
 }
 
 import os
 REDIS_PIPELINE_URL = os.environ.get('REDIS_PIPELINE_URL', 'redis://192.168.59.103:6379')
-MYSQL_PIPELINE_URL = os.environ.get('MYSQL_PIPELINE_URL', 'mysql://root:123@192.168.59.103/properties')
+MYSQL_PIPELINE_URL = os.environ.get('MYSQL_PIPELINE_URL', 'mysql://root:pass@192.168.59.103/properties')
 ES_PIPELINE_URL = os.environ.get('ES_PIPELINE_URL', 'http://192.168.59.103:9200/properties/property')
 
 #CLOSESPIDER_ITEMCOUNT = 900

@@ -123,11 +123,11 @@ class GeoPipeline(object):
         """
 
         # The url for this API
-        url = 'https://maps.googleapis.com/maps/api/geocode/json'
+        endpoint = 'https://maps.googleapis.com/maps/api/geocode/json'
 
         # Do the call
         parms = [('address', address), ('sensor', 'false')]
-        response = yield get(url, params=parms)
+        response = yield get(endpoint, params=parms)
 
         # Decode the response as json
         content = yield response.json()
