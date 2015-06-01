@@ -17,7 +17,7 @@ NEWSPIDER_MODULE = 'properties.spiders'
 
 ITEM_PIPELINES = {
     'properties.pipelines.tidyup.TidyUp': 100,
-#    'properties.pipelines.redis_cache.RedisCache': 200,
+    'properties.pipelines.redis.RedisCache': 200,
     'properties.pipelines.geo.GeoPipeline': 300,
 #    'properties.pipelines.computation.MultiThreads': 400,
 #    'properties.pipelines.legacy.Pricing': 500,

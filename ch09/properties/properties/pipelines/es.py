@@ -1,6 +1,5 @@
 import json
 import traceback
-from collections import OrderedDict
 
 from treq import put
 from scrapy import log
