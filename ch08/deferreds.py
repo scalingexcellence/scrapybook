@@ -107,7 +107,7 @@ def example1():
 def example2():
     import threading
 
-    # The company grew. We now have many of customers and I can't handle the
+    # The company grew. We now have many customers and I can't handle the
     # workload. We are now 5 developers doing exactly the same thing.
     def developers_day(customers):
         # But we now have to synchronize... a.k.a. bureaucracy
@@ -132,7 +132,7 @@ def example2():
         # We leave for the evening
         [dev.join() for dev in devs]
 
-    # We now get more done in the same time... but our dev process got more
+    # We now get more done in the same time but our dev process got more
     # complex. As we grew we spend more time managing queues than doing dev
     # work. We even had occasional deadlocks when processes got extremely
     # complex. The fact is that we are still mostly pressing buttons and
@@ -141,8 +141,8 @@ def example2():
 
 # For years we thought this was all there was... We kept hiring more
 # developers, more managers and buying servers. We were trying harder
-# optimising processes, fire-fighting while getting mediocre performance in
-# return. Till luckly one day our hosting company decided to increase their
+# optimising processes and fire-fighting while getting mediocre performance in
+# return. Till luckily one day our hosting company decided to increase their
 # fees and we decided to switch to Twisted Ltd.!
 
 
@@ -151,7 +151,7 @@ def example3():
     from twisted.internet import defer
     from twisted.internet import task
 
-    # Twisted had a slightly different approach
+    # Twisted has a slightly different approach
     def schedule_install(customer):
         print "Scheduling: Tasks for", customer
         # They are calling us back when a Wordpress installation completes.
@@ -174,7 +174,7 @@ def example3():
         def all_done(_):
             print "All done for", customer
 
-        # For each customer, we scheduler these processes on the CRM and that
+        # For each customer, we schedule these processes on the CRM and that
         # is all our chief-Twisted developer has to do
         d = schedule_install_wordpress()
         d.addCallback(schedule_install_theme)
@@ -207,7 +207,7 @@ def example4():
     from twisted.internet import defer
     from twisted.internet import task
 
-    # Twisted even gave us utilities which make the code way more readable!
+    # Twisted gave us utilities that make code way more readable!
     @defer.inlineCallbacks
     def inline_install(customer):
         print "Scheduling: Tasks for", customer
