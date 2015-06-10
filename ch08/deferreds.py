@@ -52,14 +52,14 @@ def example0():
     b.callback(4)
 
     status(a, b)
-    
+
     # Experiment 3.b
     a, b = defer.Deferred(), defer.Deferred()
 
     a.addCallback(b_callback).addCallback(on_done)
 
     b.callback(4)
-    
+
     status(a, b)
 
     a.callback(3)
@@ -88,10 +88,7 @@ def install_wordpress(customer):
     # ...then wait till the installation finishes successfully. It is boring
     # and I'm spending most of my time waiting while consuming resources
     # (memory and some CPU cycles). It's because the process is *blocking*.
-    sleep(2)
-    # Same with installing themes... I just press a button and then wait.
-    print "Installing theme for", customer
-    sleep(1)
+    sleep(3)
 
     print "All done for", customer
 
@@ -153,7 +150,6 @@ def example3():
 
     # Twisted has a slightly different approach
     def schedule_install(customer):
-        print "Scheduling: Tasks for", customer
         # They are calling us back when a Wordpress installation completes.
         # They connected the caller recognition system with our CRM and
         # we know exactly what a call is about and what has to be done next.
@@ -163,13 +159,7 @@ def example3():
             def on_done():
                 print "Callback: Finished installation for", customer
             print "Scheduling: Installation for", customer
-            return task.deferLater(reactor, 2, on_done)
-
-        def schedule_install_theme(_):
-            def on_done():
-                print "Callback: Finished theme installation for", customer
-            print "Scheduling: Theme installation for", customer
-            return task.deferLater(reactor, 1, on_done)
+            return task.deferLater(reactor, 3, on_done)
 
         def all_done(_):
             print "All done for", customer
@@ -177,7 +167,6 @@ def example3():
         # For each customer, we schedule these processes on the CRM and that
         # is all our chief-Twisted developer has to do
         d = schedule_install_wordpress()
-        d.addCallback(schedule_install_theme)
         d.addCallback(all_done)
 
         return d
@@ -210,15 +199,9 @@ def example4():
     # Twisted gave us utilities that make code way more readable!
     @defer.inlineCallbacks
     def inline_install(customer):
-        print "Scheduling: Tasks for", customer
-
         print "Scheduling: Installation for", customer
-        yield task.deferLater(reactor, 2, lambda: None)
+        yield task.deferLater(reactor, 3, lambda: None)
         print "Callback: Finished installation for", customer
-
-        print "Scheduling: Theme installation for", customer
-        yield task.deferLater(reactor, 1, lambda: None)
-        print "Callback: Finished theme installation for", customer
 
         print "All done for", customer
 
@@ -242,13 +225,9 @@ def example5():
 
     @defer.inlineCallbacks
     def inline_install(customer):
-        print "Scheduling: Tasks for", customer
         print "Scheduling: Installation for", customer
-        yield task.deferLater(reactor, 2, lambda: None)
+        yield task.deferLater(reactor, 3, lambda: None)
         print "Callback: Finished installation for", customer
-        print "Scheduling: Theme installation for", customer
-        yield task.deferLater(reactor, 1, lambda: None)
-        print "Callback: Finished theme installation for", customer
         print "All done for", customer
 
     # The new "problem" is that we have to manage all this concurrency to
@@ -282,7 +261,7 @@ if __name__ == "__main__":
                         choices=xrange(6), help='example to run')
     args = parser.parse_args()
 
-    if args.example != None:
+    if args.example is not None:
         import time
         # I know which example to run
         print "------ Running example", args.example, "------"
