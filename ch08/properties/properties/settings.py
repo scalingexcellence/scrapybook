@@ -21,3 +21,5 @@ ITEM_PIPELINES = {
 
 EXTENSIONS = { 'properties.latencies.Latencies': 500, }
 LATENCIES_INTERVAL = 5
+
+COMMANDS_MODULE='properties.hi'
