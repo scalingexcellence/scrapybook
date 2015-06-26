@@ -25,6 +25,9 @@ ITEM_PIPELINES = {
     'properties.pipelines.es.EsWriter': 700,
 }
 
+EXTENSIONS = { 'properties.latencies.Latencies': 500, }
+LATENCIES_INTERVAL = 5
+
 import os
 REDIS_PIPELINE_URL = os.environ.get('REDIS_PIPELINE_URL', 'redis://192.168.59.103:6379')
 MYSQL_PIPELINE_URL = os.environ.get('MYSQL_PIPELINE_URL', 'mysql://root:pass@192.168.59.103/properties')
