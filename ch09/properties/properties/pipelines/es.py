@@ -7,6 +7,7 @@ from urllib import quote
 from twisted.internet import defer
 from scrapy.exceptions import NotConfigured
 from twisted.internet.error import ConnectError
+from twisted.internet.error import ConnectingCancelledError
 
 
 class EsWriter(object):
@@ -27,7 +28,10 @@ class EsWriter(object):
 
     def __init__(self, es_url):
         """Store url and initialize error reporting"""
+
+        # Store the url for future reference
         self.es_url = es_url
+        # A method used to report errors
         self.report = log.err
 
     @defer.inlineCallbacks
@@ -51,9 +55,9 @@ class EsWriter(object):
             log.msg(msg, level=log.DEBUG)
 
             # Make the request
-            yield put(endpoint, json_doc.encode("utf-8"))
+            yield put(endpoint, json_doc.encode("utf-8"), timeout=5)
 
-        except ConnectError:
+        except (ConnectError, ConnectingCancelledError):
             self.report("Can't connect to ES server: %s" % self.es_url)
             self.report = lambda _: None  # Deactivate further logging
         except:

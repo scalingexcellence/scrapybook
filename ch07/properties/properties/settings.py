@@ -20,4 +20,3 @@ ITEM_PIPELINES = {'scrapy.contrib.pipeline.images.ImagesPipeline': 1}
 import os
 this_path = os.path.dirname(os.path.realpath(__file__))
 IMAGES_STORE = os.path.join(this_path, '..', 'images')
-

@@ -149,7 +149,6 @@ class GeoPipeline(object):
         This method makes an API call while respecting throttling limits.
         It also retries attempts that fail due to limits.
         """
-
         self.stats.inc_value('geo_pipeline/misses')
 
         while True:
@@ -182,16 +181,16 @@ class GeoPipeline(object):
             # Set by previous step (spider or pipeline). Don't do anything
             # apart from increasing stats
             self.stats.inc_value('geo_pipeline/already_set')
+        else:
+            # The item has to have the address field set
+            assert ("address" in item) and (len(item["address"]) > 0)
 
-        # The item has to have the address field set
-        assert ("address" in item) and (len(item["address"]) > 0)
-
-        # Extract the address from the item.
-        try:
-            item["location"] = yield self.cache.find(item["address"][0])
-        except:
-            self.stats.inc_value('geo_pipeline/errors')
-            print traceback.format_exc()
+            # Extract the address from the item.
+            try:
+                item["location"] = yield self.cache.find(item["address"][0])
+            except:
+                self.stats.inc_value('geo_pipeline/errors')
+                print traceback.format_exc()
 
         # Return the item for the next stage
         defer.returnValue(item)
