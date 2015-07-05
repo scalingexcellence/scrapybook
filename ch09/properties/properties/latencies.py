@@ -54,8 +54,8 @@ class Latencies(object):
         latency = self.latency / self.items if self.items else 0
         proc_latency = self.proc_latency / self.items if self.items else 0
 
-        log.msg(("Scraped %d items at %.1f items/sec, average latency: %.2f "
-                 "sec and average time in pipelines: %.2f sec") %
+        log.msg(("Scraped %d items at %.1f items/s, avg latency: %.2f "
+                 "s and avg time in pipelines: %.2f s") %
                 (self.items, irate, latency, proc_latency),
                 level=log.INFO, spider=spider)
 

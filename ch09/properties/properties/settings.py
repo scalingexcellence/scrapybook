@@ -17,13 +17,12 @@ NEWSPIDER_MODULE = 'properties.spiders'
 
 ITEM_PIPELINES = {
     'properties.pipelines.tidyup.TidyUp': 100,
-    'properties.pipelines.redis.RedisCache': 200,    
-    'properties.pipelines.geo.GeoPipeline': 300,
-    'properties.pipelines.computation.UsingBlocking': 400,
-    #'properties.pipelines.legacy.Pricing': 500,
-
-    'properties.pipelines.mysql.MysqlWriter': 600,
-    'properties.pipelines.es.EsWriter': 700,
+    'properties.pipelines.redis.RedisCache': 300,    
+    'properties.pipelines.geo.GeoPipeline': 400,
+    'properties.pipelines.computation.UsingBlocking': 500,
+    'properties.pipelines.legacy.Pricing': 600,
+    'properties.pipelines.mysql.MysqlWriter': 700,
+    'properties.pipelines.es.EsWriter': 800,
 }
 
 EXTENSIONS = {'properties.latencies.Latencies': 500, }

@@ -23,7 +23,7 @@ class Throttler(object):
         """Stop the throttler"""
         self.looping_call.stop()
 
-    def enqueue(self):
+    def throttle(self):
         """
         Call this function to get a deferred that will become available
         in some point in the future in accordance with the throttling rate
@@ -153,7 +153,7 @@ class GeoPipeline(object):
 
         while True:
             # Wait enough to adhere to throttling policies
-            yield self.throttler.enqueue()
+            yield self.throttler.throttle()
 
             # Do the API call
             try:
