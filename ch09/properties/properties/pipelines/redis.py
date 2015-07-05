@@ -10,9 +10,12 @@ from scrapy import signals
 
 
 class RedisCache(object):
+    """A pipeline that uses a Redis server to cache values"""
 
     @classmethod
     def from_crawler(cls, crawler):
+        """Create a new instance and pass it Redis' url and namespace"""
+        
         # Get redis URL
         redis_url = crawler.settings.get('REDIS_PIPELINE_URL', None)
 
@@ -25,6 +28,8 @@ class RedisCache(object):
         return cls(crawler, redis_url, redis_nm)
 
     def __init__(self, crawler, redis_url, redis_nm):
+        """Store configuration, open connection and register callback"""
+        
         # Store the url and the namespace for future reference
         self.redis_url = redis_url
         self.redis_nm = redis_nm
@@ -43,6 +48,12 @@ class RedisCache(object):
 
     @defer.inlineCallbacks
     def process_item(self, item, spider):
+        """Looks up address in redis"""
+
+        if "location" in item:
+            # Set by previous step (spider or pipeline). Don't do anything
+            defer.returnValue(item)
+            return
 
         # The item has to have the address field set
         assert ("address" in item) and (len(item["address"]) > 0)
@@ -81,15 +92,20 @@ class RedisCache(object):
         # Extract the address from the item.
         address = item["address"][0]
 
-        # Store it in Redis asynchronously
         key = self.redis_nm + ":" + address
 
         quiet = lambda failure: failure.trap(txredisapi.ConnectionError)
 
+        # Store it in Redis asynchronously
         return self.connection.set(key, value).addErrback(quiet)
 
     @staticmethod
     def parse_redis_url(redis_url):
+        """
+        Parses redis url and prepares arguments for
+        txredisapi.lazyConnectionPool()
+        """
+
         params = dj_redis_url.parse(redis_url)
 
         conn_kwargs = {}

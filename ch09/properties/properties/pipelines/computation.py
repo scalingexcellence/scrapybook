@@ -3,33 +3,59 @@ import threading
 
 from twisted.internet import reactor, defer
 
-class MultiThreads(object):
+
+class UsingBlocking(object):
+    """A pipeline that fakes some computation or blocking calls"""
 
     def __init__(self):
-        self.beta = 0
-        self.delta = 0
+        """
+        This function doesn't need any settings so init just initializes a few
+        fields
+        """
+
+        self.beta, self.delta = 0, 0
         self.lock = threading.RLock()
 
     @defer.inlineCallbacks
     def process_item(self, item, spider):
-        d = defer.Deferred()
+        """We defer a function to Twisted rector's thread pool"""
 
-        reactor.callInThread(self._do_calculation, item["price"][0], d)
+        # Get the price
+        price = item["price"][0]
 
-        item["price"][0] = yield d
+        # Call a complex/blocking function in a thread pool
+        out = defer.Deferred()
+        reactor.callInThread(self._do_calculation, price, out)
 
+        # Yield out to get the result and replace the price with it
+        item["price"][0] = yield out
+
+        # Return the item to the next stage
         defer.returnValue(item)
 
-    def _do_calculation(self, price, d):
+    def _do_calculation(self, price, out):
+        """
+        This is a slow calculation. Notice that it uses locks to protect a
+        global state. If you don't use locks and you have global state, your
+        will end up with corrupted data
+        """
+
+        # Use a lock to protect the critical section
         with self.lock:
-            # A complex calculation that uses global state
+            # Faking a complex calculation that uses global state
             self.beta += 1
+            # Hold the lock for as little time as possible. Here by sleeping
+            # for 1ms we make data corruption in case you don't hold the lock
+            # more likely
             time.sleep(0.001)
             self.delta += 1
-            new_price = price + self.beta - self.delta
+            new_price = price + self.beta - self.delta + 1
 
+        # Using our "complex" calculation, the end-value must remain the same
+        assert abs(new_price - price - 1) < 0.01, "%f!=%f" % (new_price, price)
+
+        # Do some calculations that don't require global state...
         time.sleep(0.10)
 
-        assert abs(new_price - price) < 0.00001, "%f != %f" % (new_price, price)
-
-        reactor.callFromThread(d.callback, new_price)
+        # We enqueue processing the value to the main (reactor's) thread
+        reactor.callFromThread(out.callback, new_price)

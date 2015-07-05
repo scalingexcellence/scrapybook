@@ -82,7 +82,7 @@ class MysqlWriter(object):
     @staticmethod
     def parse_mysql_url(mysql_url):
         """
-        Parses the mysql url and prepares arguments for
+        Parses mysql url and prepares arguments for
         adbapi.ConnectionPool()
         """
 

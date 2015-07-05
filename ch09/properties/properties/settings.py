@@ -19,7 +19,7 @@ ITEM_PIPELINES = {
     'properties.pipelines.tidyup.TidyUp': 100,
     'properties.pipelines.redis.RedisCache': 200,    
     'properties.pipelines.geo.GeoPipeline': 300,
-    #'properties.pipelines.computation.MultiThreads': 400,
+    'properties.pipelines.computation.UsingBlocking': 400,
     #'properties.pipelines.legacy.Pricing': 500,
 
     'properties.pipelines.mysql.MysqlWriter': 600,
