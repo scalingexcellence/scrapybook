@@ -1,4 +1,5 @@
-from scrapy import log
+import logging
+
 from twisted.internet import defer
 from twisted.internet import protocol
 from twisted.internet import reactor
@@ -13,6 +14,8 @@ class CommandSlot(protocol.ProcessProtocol):
         self._current_deferred = None
         self._queue = []
         reactor.spawnProcess(self, args[0], args)
+
+        self.logger = logging.getLogger('pricing-pipeline')
 
     def legacy_calculate(self, price):
         """Enqueue a price to be calculated"""
@@ -45,7 +48,7 @@ class CommandSlot(protocol.ProcessProtocol):
 
     def errReceived(self, data):
         """Called in case of an error"""
-        log.err('Process[%r]: %s' % (self.transport.pid, data.rstrip()))
+        self.logger.error('PID[%r]: %s' % (self.transport.pid, data.rstrip()))
 
 
 class Pricing(object):

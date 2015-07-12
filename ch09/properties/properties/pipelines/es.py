@@ -2,7 +2,6 @@ import json
 import traceback
 
 from treq import put
-from scrapy import log
 from urllib import quote
 from twisted.internet import defer
 from scrapy.exceptions import NotConfigured
@@ -31,8 +30,8 @@ class EsWriter(object):
 
         # Store the url for future reference
         self.es_url = es_url
-        # A method used to report errors
-        self.report = log.err
+        # Report connection error only once
+        self.report_connection_error = True
 
     @defer.inlineCallbacks
     def process_item(self, item, spider):
@@ -40,6 +39,9 @@ class EsWriter(object):
         Pipeline's main method. Uses inlineCallbacks to do
         asynchronous REST requests
         """
+
+        logger = spider.logger
+
         try:
             # Create a json representation of this item
             json_doc = json.dumps(dict(item), ensure_ascii=False)
@@ -52,14 +54,15 @@ class EsWriter(object):
 
             # Debug log the insert
             msg = "Insering \"%s...\" to %s" % (json_doc[:100], endpoint)
-            log.msg(msg, level=log.DEBUG)
+            logger.debug(msg)
 
             # Make the request
             yield put(endpoint, json_doc.encode("utf-8"), timeout=5)
 
         except (ConnectError, ConnectingCancelledError):
-            self.report("Can't connect to ES server: %s" % self.es_url)
-            self.report = lambda _: None  # Deactivate further logging
+            if self.report_connection_error:
+                logger.error("Can't connect to ES: %s" % self.es_url)
+                self.report_connection_error = False
         except:
             print traceback.format_exc()
         finally:

@@ -1,15 +1,17 @@
-from scrapy import log, signals
+import logging
+
+from scrapy import signals
 from scrapy.exceptions import DropItem
 
 
 class HooksasyncExtension(object):
     @classmethod
     def from_crawler(cls, crawler):
-        log.msg("HooksasyncExtension from_crawler")
+        logging.info("HooksasyncExtension from_crawler")
         return cls(crawler)
 
     def __init__(self, crawler):
-        log.msg("HooksasyncExtension Constructor called")
+        logging.info("HooksasyncExtension Constructor called")
 
         # connect the extension object to signals
         cs = crawler.signals.connect
@@ -26,41 +28,41 @@ class HooksasyncExtension(object):
         cs(self.item_dropped, signal=signals.item_dropped)
 
     def engine_started(self):
-        log.msg("HooksasyncExtension, signals.engine_started fired")
+        logging.info("HooksasyncExtension, signals.engine_started fired")
 
     def engine_stopped(self):
-        log.msg("HooksasyncExtension, signals.engine_stopped fired")
+        logging.info("HooksasyncExtension, signals.engine_stopped fired")
 
     def spider_opened(self, spider):
-        log.msg("HooksasyncExtension, signals.spider_opened fired")
+        logging.info("HooksasyncExtension, signals.spider_opened fired")
 
     def spider_idle(self, spider):
-        log.msg("HooksasyncExtension, signals.spider_idle fired")
+        logging.info("HooksasyncExtension, signals.spider_idle fired")
 
     def spider_closed(self, spider, reason):
-        log.msg("HooksasyncExtension, signals.spider_closed fired")
+        logging.info("HooksasyncExtension, signals.spider_closed fired")
 
     def spider_error(self, failure, response, spider):
-        log.msg("HooksasyncExtension, signals.spider_error fired")
+        logging.info("HooksasyncExtension, signals.spider_error fired")
 
     def request_scheduled(self, request, spider):
-        log.msg("HooksasyncExtension, signals.request_scheduled fired")
+        logging.info("HooksasyncExtension, signals.request_scheduled fired")
 
     def response_received(self, response, request, spider):
-        log.msg("HooksasyncExtension, signals.response_received fired")
+        logging.info("HooksasyncExtension, signals.response_received fired")
 
     def response_downloaded(self, response, request, spider):
-        log.msg("HooksasyncExtension, signals.response_downloaded fired")
+        logging.info("HooksasyncExtension, signals.response_downloaded fired")
 
     def item_scraped(self, item, response, spider):
-        log.msg("HooksasyncExtension, signals.item_scraped fired")
+        logging.info("HooksasyncExtension, signals.item_scraped fired")
 
     def item_dropped(self, item, spider, exception):
-        log.msg("HooksasyncExtension, signals.item_dropped fired")
+        logging.info("HooksasyncExtension, signals.item_dropped fired")
 
     @classmethod
     def from_settings(cls, settings):
-        log.msg("HooksasyncExtension from_settings")
+        logging.info("HooksasyncExtension from_settings")
         # This is never called - but would be called if from_crawler()
         # didn't exist. from_crawler() can access the settings via
         # crawler.settings but also has access to everything that
@@ -75,25 +77,25 @@ class HooksasyncDownloaderMiddleware(object):
 
     @classmethod
     def from_crawler(cls, crawler):
-        log.msg("HooksasyncDownloaderMiddleware from_crawler")
+        logging.info("HooksasyncDownloaderMiddleware from_crawler")
         # Here the constructor is actually called and the class returned
         return cls(crawler)
 
     def __init__(self, crawler):
-        log.msg("HooksasyncDownloaderMiddleware Constructor called")
+        logging.info("HooksasyncDownloaderMiddleware Constructor called")
 
     def process_request(self, request, spider):
-        log.msg(("HooksasyncDownloaderMiddleware process_request "
-                "called for %s") % request.url)
+        logging.info(("HooksasyncDownloaderMiddleware process_request "
+                      "called for %s") % request.url)
 
     def process_response(self, request, response, spider):
-        log.msg(("HooksasyncDownloaderMiddleware process_response "
-                "called for %s") % request.url)
+        logging.info(("HooksasyncDownloaderMiddleware process_response "
+                      "called for %s") % request.url)
         return response
 
     def process_exception(self, request, exception, spider):
-        log.msg(("HooksasyncDownloaderMiddleware process_exception "
-                "called for %s") % request.url)
+        logging.info(("HooksasyncDownloaderMiddleware process_exception "
+                      "called for %s") % request.url)
 
 
 class HooksasyncSpiderMiddleware(object):
@@ -103,28 +105,29 @@ class HooksasyncSpiderMiddleware(object):
 
     @classmethod
     def from_crawler(cls, crawler):
-        log.msg("HooksasyncSpiderMiddleware from_crawler")
+        logging.info("HooksasyncSpiderMiddleware from_crawler")
         # Here the constructor is actually called and the class returned
         return cls(crawler)
 
     def __init__(self, crawler):
-        log.msg("HooksasyncSpiderMiddleware Constructor called")
+        logging.info("HooksasyncSpiderMiddleware Constructor called")
 
     def process_spider_input(self, response, spider):
-        log.msg(("HooksasyncSpiderMiddleware process_spider_input "
-                "called for %s") % response.url)
+        logging.info(("HooksasyncSpiderMiddleware process_spider_input "
+                      "called for %s") % response.url)
 
     def process_spider_output(self, response, result, spider):
-        log.msg(("HooksasyncSpiderMiddleware process_spider_output "
-                "called for %s") % response.url)
+        logging.info(("HooksasyncSpiderMiddleware process_spider_output "
+                      "called for %s") % response.url)
         return result
 
     def process_spider_exception(self, response, exception, spider):
-        log.msg(("HooksasyncSpiderMiddleware process_spider_exception "
-                "called for %s") % response.url)
+        logging.info(("HooksasyncSpiderMiddleware process_spider_exception "
+                      "called for %s") % response.url)
 
     def process_start_requests(self, start_requests, spider):
-        log.msg("HooksasyncSpiderMiddleware process_start_requests called")
+        logging.info("HooksasyncSpiderMiddleware process_start_requests"
+                     " called")
         return start_requests
 
 
@@ -136,24 +139,24 @@ class HooksasyncPipeline(object):
 
     @classmethod
     def from_crawler(cls, crawler):
-        log.msg("HooksasyncPipeline from_crawler")
+        logging.info("HooksasyncPipeline from_crawler")
         # Here the constructor is actually called and the class returned
         return cls(crawler)
 
     def __init__(self, crawler):
-        log.msg("HooksasyncPipeline Constructor called")
+        logging.info("HooksasyncPipeline Constructor called")
 
     def process_item(self, item, spider):
         if item['name'] == "Hello 1":
             raise DropItem("Not good")
-        log.msg(("HooksasyncPipeline process_item() called for "
-                "item: %s") % item['name'])
+        logging.info(("HooksasyncPipeline process_item() called for "
+                      "item: %s") % item['name'])
         return item
 
     # This function overrides the default for Item Pipelines
     def open_spider(self, spider):
-        log.msg("HooksasyncPipeline spider_opened")
+        logging.info("HooksasyncPipeline spider_opened")
 
     # This function overrides the default for Item Pipelines
     def close_spider(self, spider):
-        log.msg("HooksasyncPipeline spider_closed")
+        logging.info("HooksasyncPipeline spider_closed")

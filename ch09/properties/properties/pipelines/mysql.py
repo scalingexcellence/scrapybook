@@ -3,7 +3,6 @@ import traceback
 import dj_database_url
 import MySQLdb
 
-from scrapy import log
 from twisted.internet import defer
 from twisted.enterprise import adbapi
 from scrapy.exceptions import NotConfigured
@@ -33,8 +32,8 @@ class MysqlWriter(object):
 
         # Store the url for future reference
         self.mysql_url = mysql_url
-        # A method used to report errors
-        self.report = log.err
+        # Report connection error only once
+        self.report_connection_error = True
 
         # Parse MySQL URL and try to initialize a connection
         conn_kwargs = MysqlWriter.parse_mysql_url(mysql_url)
@@ -52,11 +51,14 @@ class MysqlWriter(object):
     def process_item(self, item, spider):
         """Processes the item. Does insert into MySQL"""
 
+        logger = spider.logger
+
         try:
             yield self.dbpool.runInteraction(MysqlWriter.do_replace, item)
         except MySQLdb.OperationalError:
-            self.report("Can't connect to MySQL server: %s" % self.mysql_url)
-            self.report = lambda _: None  # Deactivate further logging
+            if self.report_connection_error:
+                logger.error("Can't connect to MySQL: %s" % self.mysql_url)
+                self.report_connection_error = False
         except:
             print traceback.format_exc()
 

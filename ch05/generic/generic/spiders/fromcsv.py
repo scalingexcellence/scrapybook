@@ -1,7 +1,8 @@
-import scrapy
 import csv
+
+import scrapy
 from scrapy.http import Request
-from scrapy.contrib.loader import ItemLoader
+from scrapy.loader import ItemLoader
 from scrapy.item import Item, Field
 
 

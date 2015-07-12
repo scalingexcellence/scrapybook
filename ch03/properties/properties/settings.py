@@ -14,3 +14,7 @@ NEWSPIDER_MODULE = 'properties.spiders'
 # Crawl responsibly by identifying yourself (and your website) on
 # the user-agent
 #USER_AGENT = 'properties (+http://www.yourdomain.com)'
+
+# Disable S3
+AWS_ACCESS_KEY_ID = ""
+AWS_SECRET_ACCESS_KEY = ""

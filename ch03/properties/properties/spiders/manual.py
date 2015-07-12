@@ -1,11 +1,13 @@
-from scrapy.contrib.loader.processor import MapCompose, Join
-from scrapy.contrib.loader import ItemLoader
-from properties.items import PropertiesItem
-from scrapy.http import Request
 import datetime
 import urlparse
 import socket
 import scrapy
+
+from scrapy.loader.processors import MapCompose, Join
+from scrapy.loader import ItemLoader
+from scrapy.http import Request
+
+from properties.items import PropertiesItem
 
 
 class BasicSpider(scrapy.Spider):

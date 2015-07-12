@@ -19,7 +19,11 @@ ITEM_PIPELINES = {
     'properties.pipelines.tidyup.TidyUp': 100,
 }
 
-EXTENSIONS = { 'properties.latencies.Latencies': 500, }
+EXTENSIONS = {'properties.latencies.Latencies': 500}
 LATENCIES_INTERVAL = 5
 
-COMMANDS_MODULE='properties.hi'
+COMMANDS_MODULE = 'properties.hi'
+
+# Disable S3
+AWS_ACCESS_KEY_ID = ""
+AWS_SECRET_ACCESS_KEY = ""

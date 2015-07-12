@@ -1,4 +1,4 @@
-from scrapy.command import ScrapyCommand
+from scrapy.commands import ScrapyCommand
 
 
 class Command(ScrapyCommand):

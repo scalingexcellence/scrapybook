@@ -5,7 +5,6 @@ import txredisapi
 
 from scrapy.exceptions import NotConfigured
 from twisted.internet import defer
-from scrapy import log
 from scrapy import signals
 
 
@@ -15,7 +14,7 @@ class RedisCache(object):
     @classmethod
     def from_crawler(cls, crawler):
         """Create a new instance and pass it Redis' url and namespace"""
-        
+
         # Get redis URL
         redis_url = crawler.settings.get('REDIS_PIPELINE_URL', None)
 
@@ -29,13 +28,13 @@ class RedisCache(object):
 
     def __init__(self, crawler, redis_url, redis_nm):
         """Store configuration, open connection and register callback"""
-        
+
         # Store the url and the namespace for future reference
         self.redis_url = redis_url
         self.redis_nm = redis_nm
 
-        # A method used to report errors
-        self.report = log.err
+        # Report connection error only once
+        self.report_connection_error = True
 
         # Parse redis URL and try to initialize a connection
         args = RedisCache.parse_redis_url(redis_url)
@@ -49,6 +48,8 @@ class RedisCache(object):
     @defer.inlineCallbacks
     def process_item(self, item, spider):
         """Looks up address in redis"""
+
+        logger = spider.logger
 
         if "location" in item:
             # Set by previous step (spider or pipeline). Don't do anything
@@ -72,8 +73,9 @@ class RedisCache(object):
                 item["location"] = json.loads(value)
 
         except txredisapi.ConnectionError:
-            self.report("Can't connect to Redis server: %s" % self.redis_url)
-            self.report = lambda _: None  # Deactivate further logging
+            if self.report_connection_error:
+                logger.error("Can't connect to Redis: %s" % self.redis_url)
+                self.report_connection_error = False
 
         defer.returnValue(item)
 

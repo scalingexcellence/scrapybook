@@ -1,7 +1,7 @@
-from scrapy.contrib.loader.processor import MapCompose, Join
-from scrapy.contrib.linkextractors import LinkExtractor
-from scrapy.contrib.spiders import CrawlSpider, Rule
-from scrapy.contrib.loader import ItemLoader
+from scrapy.loader.processors import MapCompose, Join
+from scrapy.linkextractors import LinkExtractor
+from scrapy.spiders import CrawlSpider, Rule
+from scrapy.loader import ItemLoader
 from properties.items import PropertiesItem
 import datetime
 import urlparse

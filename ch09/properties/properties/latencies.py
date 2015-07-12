@@ -3,7 +3,6 @@ from time import time
 from scrapy.exceptions import NotConfigured
 from twisted.internet import task
 from scrapy import signals
-from scrapy import log
 
 
 class Latencies(object):
@@ -54,9 +53,8 @@ class Latencies(object):
         latency = self.latency / self.items if self.items else 0
         proc_latency = self.proc_latency / self.items if self.items else 0
 
-        log.msg(("Scraped %d items at %.1f items/s, avg latency: %.2f "
-                 "s and avg time in pipelines: %.2f s") %
-                (self.items, irate, latency, proc_latency),
-                level=log.INFO, spider=spider)
+        spider.logger.info(("Scraped %d items at %.1f items/s, avg latency: "
+                            "%.2f s and avg time in pipelines: %.2f s") %
+                          (self.items, irate, latency, proc_latency))
 
         self.latency, self.proc_latency, self.items = 0, 0, 0
