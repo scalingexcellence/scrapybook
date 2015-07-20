@@ -1,0 +1,20 @@
+redis:
+    image: redis
+    ports:
+        - "6379:6379"
+es:
+    image: elasticsearch
+    ports:
+        - "9200:9200"
+scrapyd01:
+    image: ceroic/scrapyd
+    ports:
+        - "6820:6800"
+scrapyd02:
+    image: ceroic/scrapyd
+    ports:
+        - "6821:6800"
+scrapyd03:
+    image: ceroic/scrapyd
+    ports:
+        - "6822:6800"
