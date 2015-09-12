@@ -94,6 +94,7 @@ class Detail(BaseResource):
         BaseResource.__init__(self, delay)
         self.items_per_page = settings.getint('SPEED_ITEMS_PER_DETAIL', 1)
         self.limit = settings.getint('SPEED_TOTAL_ITEMS', 1000)
+        self.garbage_size = settings.getint('SPEED_DETAIL_EXTRA_SIZE', 0)
 
     def _delayedRender(self, request):
         id0 = self.get_if(request, 'id0', 1, int)
@@ -105,6 +106,9 @@ class Detail(BaseResource):
                           % idx)
             request.write('</li>')
         request.write('</ul>')
+        request.write('<!--')
+        request.write("i" * self.garbage_size)
+        request.write('-->')
         request.finish()
 
 
@@ -119,8 +123,8 @@ class Root(Resource):
         return self
 
     def render_GET(self, request):
-        return 'Resource not found. Try: <a href="api?text=foo">api</a>, <a '
-        'href="index?p=1">index</a>, <a href="detail?id0=1">detail</a>'
+        return ('Resource not found. Try: <a href="api?text=foo">api</a>, <a h'
+                'ref="index?p=1">index</a>, <a href="detail?id0=1">detail</a>')
 
 
 class SimpleServer(object):

@@ -5,9 +5,8 @@ import time
 
 from treq import post
 
-from twisted.internet import defer
 from twisted.internet.task import deferLater
-from twisted.internet import reactor
+from twisted.internet import defer, reactor, task
 
 import scrapy
 
@@ -15,6 +14,8 @@ from scrapy import FormRequest
 from scrapy.http import Request
 from scrapy.linkextractors import LinkExtractor
 from scrapy.spiders import CrawlSpider, Rule
+from scrapy.exceptions import NotConfigured
+from scrapy import signals
 
 from server import SimpleServer
 
@@ -23,6 +24,83 @@ class DummyItem(scrapy.Item):
     id = scrapy.Field()
     info = scrapy.Field()
     translation = scrapy.Field()
+
+
+class SpeedSpider(CrawlSpider):
+    name = 'speed'
+
+    @classmethod
+    def from_crawler(cls, crawler, *args, **kwargs):
+        spider = super(SpeedSpider, cls).from_crawler(crawler, *args, **kwargs)
+
+        if not crawler.settings.getbool('SPEED_SKIP_SERVER', False):
+            port = crawler.settings.getint('SPEED_PORT', 9312)
+            spider.server = SimpleServer(port, crawler.settings)
+
+        spider.blocking_delay = crawler.settings.getfloat(
+            'SPEED_SPIDER_BLOCKING_DELAY', 0.0)
+
+        return spider
+
+    def get_detail_requests(self):
+        port = self.settings.getint('SPEED_PORT', 9312)
+        items_per_page = self.settings.getint('SPEED_ITEMS_PER_DETAIL', 1)
+        total_items = self.settings.getint('SPEED_TOTAL_ITEMS', 1000)
+
+        callback = self.parse_item
+        url = 'http://localhost:%d/detail?id0=%d'
+        m_range = xrange(1, total_items+1, items_per_page)
+        return [Request(url % (port, i), callback=callback) for i in m_range]
+
+    def start_requests(self):
+        start_requests_style = self.settings.get('SPEED_START_REQUESTS_STYLE',
+                                                 'Force')
+
+        if start_requests_style == 'UseIndex':
+            # The requests out of the index page get processed in the same
+            # parallel(... CONCURRENT_ITEMS) among regular Items.
+            port = self.settings.getint('SPEED_PORT', 9312)
+            url = 'http://localhost:%d/index' % port
+            yield self.make_requests_from_url(url)
+        elif start_requests_style == 'Force':
+            # This is feeding those requests directly into the scheduler's
+            # queue.
+            for request in self.get_detail_requests():
+                self.crawler.engine.crawl(request=request, spider=self)
+        elif start_requests_style == 'Iterate':
+            # start_requests are consumed "on demand" through yield
+            for request in self.get_detail_requests():
+                yield request
+        else:
+            print "No start_requests."
+
+    def closed(self, reason):
+        if hasattr(self, 'server'):
+            self.server.close()
+
+    def my_process_request(self, r):
+        if self.settings.getbool('SPEED_INDEX_HIGHER_PRIORITY', True):
+            r.priority = 1
+        return r
+
+    rules = (
+        Rule(LinkExtractor(restrict_xpaths='//*[@class="nav"]'),
+             process_request="my_process_request"),
+        Rule(LinkExtractor(restrict_xpaths='//*[@class="item"]'),
+             callback='parse_item')
+    )
+
+    def parse_item(self, response):
+        if self.blocking_delay > 0.001:
+            # This is a bad bad thing
+            time.sleep(self.blocking_delay)
+
+        for li in response.xpath('//li'):
+            i = DummyItem()
+            id_phrase = li.xpath('.//h3/text()').extract()[0]
+            i['id'] = int(id_phrase.split()[1])
+            i['info'] = li.xpath('.//div[@class="info"]/text()').extract()
+            yield i
 
 
 class DummyPipeline(object):
@@ -55,13 +133,14 @@ class DummyPipeline(object):
 
         if self.async_delay > 0.001:
             # Emulate an asynchronous call to a translation function
+            delay = self.async_delay
             translate = lambda: "calculated-%s" % item['info']
-            translation = yield deferLater(reactor, self.delay, translate)
+            translation = yield deferLater(reactor, delay, translate)
             item['translation'] = translation
 
         if self.downloader_api:
             # Do an API call using Scrapy's downloader
-            url = "http://192.168.1.9:%d/api"
+            url = "http://localhost:%d/api"
             formdata = dict(text=item['info'])
             request = FormRequest(url % self.port, formdata=formdata)
             response = yield self.crawler.engine.download(request, spider)
@@ -69,7 +148,7 @@ class DummyPipeline(object):
 
         if self.treq_api:
             # Do an API call using treq
-            url = "http://192.168.1.9:%d/api"
+            url = "http://localhost:%d/api"
             response = yield post(url % self.port, {"text": item['info']})
             json_response = yield response.json()
             item['translation'] = json_response['translation']
@@ -77,72 +156,54 @@ class DummyPipeline(object):
         defer.returnValue(item)
 
 
-class SpeedSpider(CrawlSpider):
-    name = 'speed'
-
+class PrintCoreMetrics(object):
+    """
+    An extension that prints "core metrics"
+    """
     @classmethod
-    def from_crawler(cls, crawler, *args, **kwargs):
-        return cls(crawler, *args, **kwargs)
+    def from_crawler(cls, crawler):
+        return cls(crawler)
 
-    def __init__(self, crawler, *args, **kwargs):
-        super(SpeedSpider, self).__init__(*args, **kwargs)
+    def __init__(self, crawler):
+        self.crawler = crawler
+        self.interval = crawler.settings.getfloat('CORE_METRICS_INTERVAL', 1.0)
+        self.first = True
 
-        if not crawler.settings.getbool('SPEED_SKIP_SERVER', False):
-            port = crawler.settings.getint('SPEED_PORT', 9312)
-            self.server = SimpleServer(port, crawler.settings)
+        if not self.interval:
+            raise NotConfigured
 
-    def get_detail_requests(self):
-        port = self.settings.getint('SPEED_PORT', 9312)
-        items_per_page = self.settings.getint('SPEED_ITEMS_PER_DETAIL', 1)
-        total_items = self.settings.getint('SPEED_TOTAL_ITEMS', 1000)
+        cs = crawler.signals
+        cs.connect(self._spider_opened, signal=signals.spider_opened)
+        cs.connect(self._spider_closed, signal=signals.spider_closed)
 
-        callback = self.parse_item
-        url = 'http://localhost:%d/detail?id0=%d'
-        m_range = xrange(1, total_items+1, items_per_page)
-        return [Request(url % (port, i), callback=callback) for i in m_range]
+    def _spider_opened(self, spider):
+        self.task = task.LoopingCall(self._log, spider)
+        self.task.start(self.interval)
 
-    def start_requests(self):
-        start_requests_style = self.settings.get('SPEED_START_REQUESTS_STYLE',
-                                                 'Force')
+    def _spider_closed(self, spider, reason):
+        if self.task.running:
+            self.task.stop()
 
-        if start_requests_style == 'UseIndex':
-            # The requests out of the index page get processed in the same
-            # parallel(... CONCURRENT_ITEMS) among regular Items.
-            url = 'http://localhost:%d/index' % self.port
-            yield self.make_requests_from_url(url)
-        elif start_requests_style == 'Force':
-            # This is feeding those requests directly into the scheduler's
-            # queue.
-            for request in self.get_detail_requests():
-                self.crawler.engine.crawl(request=request, spider=self)
-        elif start_requests_style == 'Iterate':
-            # start_requests are consumed "on demand" through yield
-            for request in self.get_detail_requests():
-                yield request
-        else:
-            print "No start_requests."
+    def _log(self, spider):
+        engine = self.crawler.engine
+        stats = self.crawler.stats
 
-    def closed(self, reason):
-        if hasattr(self, 'server'):
-            self.server.close()
+        if self.first:
+            self.first = False
+            spider.logger.info(("%8s"*5+"%10s") % (
+                "s/edule",
+                "d/load",
+                "scrape",
+                "p/line",
+                "done",
+                "mem",
+                ))
 
-    def my_process_request(self, r):
-        if self.settings.getbool('SPEED_INDEX_HIGHER_PRIORITY', True):
-            r.priority = 1
-        return r
-
-    rules = (
-        Rule(LinkExtractor(restrict_xpaths='//*[@class="nav"]'),
-             process_request="my_process_request"),
-        Rule(LinkExtractor(restrict_xpaths='//*[@class="item"]'),
-             callback='parse_item')
-    )
-
-    def parse_item(self, response):
-
-        for li in response.xpath('//li'):
-            i = DummyItem()
-            id_phrase = li.xpath('.//h3/text()').extract()[0]
-            i['id'] = int(id_phrase.split()[1])
-            i['info'] = li.xpath('.//div[@class="info"]/text()').extract()
-            yield i
+        spider.logger.info(("%8d"*5+"%10d") % (
+            len(engine.slot.scheduler.mqs),
+            len(engine.downloader.active),
+            len(engine.scraper.slot.active),
+            engine.scraper.slot.itemproc_size,
+            stats.get_value('item_scraped_count') or 0,
+            engine.scraper.slot.active_size
+            ))

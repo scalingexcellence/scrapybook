@@ -2,11 +2,19 @@
 
 BOT_NAME = 'speed'
 
+COMMANDS_MODULE = 'speed.runserver'
 SPIDER_MODULES = ['speed.spiders']
 NEWSPIDER_MODULE = 'speed.spiders'
 
-ITEM_PIPELINES = {'speed.spiders.speed.DummyPipeline': 100}
 
+#SPEED_PORT = 9312
+
+ITEM_PIPELINES = {'speed.spiders.speed.DummyPipeline': 100}
+EXTENSIONS = {'speed.spiders.speed.PrintCoreMetrics': 500}
+
+# Disable S3
+AWS_ACCESS_KEY_ID = ""
+AWS_SECRET_ACCESS_KEY = ""
 
 # Defaults for high performance
 # See http://doc.scrapy.org/en/latest/topics/broad-crawls.html
@@ -25,11 +33,15 @@ CONCURRENT_REQUESTS_PER_DOMAIN = 1000000
 # it's better to have this set to 1
 CONCURRENT_ITEMS = 1
 
+# The most key Scrapy setting:
+CONCURRENT_REQUESTS = 16
 
-# *** Main factors ***
-CONCURRENT_REQUESTS = 64
-SPEED_TOTAL_ITEMS = 10000
+# Main simulation factors:
+SPEED_TOTAL_ITEMS = 5000
 SPEED_T_RESPONSE = 0.125
+
+# *** Spider simulation settings ***
+#SPEED_SPIDER_BLOCKING_DELAY = 0
 
 # *** Pipeline control settings ***
 #CONCURRENT_ITEMS = 100
@@ -46,6 +58,7 @@ SPEED_T_RESPONSE = 0.125
 #SPEED_START_REQUESTS_STYLE = 'Force' # or 'UseIndex' or 'Iterate'
 #SPEED_DETAILS_PER_INDEX_PAGE = SPEED_TOTAL_ITEMS
 #SPEED_ITEMS_PER_DETAIL = 100
+#SPEED_DETAIL_EXTRA_SIZE = 0
 
 # *** Adjusting individual response times ***
 #SPEED_API_T_RESPONSE= 0.5
