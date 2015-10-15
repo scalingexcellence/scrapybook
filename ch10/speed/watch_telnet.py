@@ -7,12 +7,13 @@ import json
 from bson import json_util
 from datetime import datetime
 
+
 class Reporter(object):
-    
-    def __init__(self, schema = None):
+
+    def __init__(self, schema=None):
         self.schema = schema
         self.first = True
-        
+
     @staticmethod
     def map_value(value):
         try:
@@ -30,33 +31,35 @@ class Reporter(object):
     def parse_stats(ln):
         if ln.find('Execution engine status') == -1:
             return None
-    
+
         tuples = []
-        for i in  map(string.strip, ln.split('\n')):
+        for i in map(string.strip, ln.split('\n')):
             parts = map(string.strip, i.split(':'))
             if len(parts) == 2:
                 # est() line
                 tuples.append((parts[0], Reporter.map_value(parts[1])))
             elif i.startswith('\'{') and i.endswith('}\''):
-                stats = json.loads(i[1:len(i)-1], object_hook=json_util.object_hook)
+                str_json = i[1:len(i)-1]
+                stats = json.loads(str_json, object_hook=json_util.object_hook)
                 for kv in stats.iteritems():
                     tuples.append(kv)
-    
+
         return dict(tuples)
-    
+
     def parse(self, ln, secs):
         status = Reporter.parse_stats(ln)
         if status:
             if not self.schema:
-                self.schema = map(lambda x: (x,True), sorted(status.keys()))
-            
+                self.schema = map(lambda x: (x, True), sorted(status.keys()))
+
             valid_keys = [v[0] for v in self.schema if v[1]]
-            
+
             if self.first:
                 self.first = False
                 print ",".join(['gap' if k == '' else k for k in valid_keys])
 
-            print ",".join(['  ' if k == '' else (str(status[k]) if k in status else '-') for k in valid_keys])
+            frmt = lambda k: str(status[k]) if k in status else '-'
+            print ",".join(['  ' if k == '' else frmt(k) for k in valid_keys])
 
 tn = telnetlib.Telnet("localhost", 6023)
 
@@ -65,16 +68,20 @@ r = Reporter([
     ('len(engine.downloader.active)', True),
     ('len(engine.scraper.slot.active)', True),
     ('engine.scraper.slot.itemproc_size', True),
-    
+
     ('', True),
     ('len(engine.slot.inprogress)', True),
-    ('engine.scraper.slot.active_size', True), # compared with max_active_size=5000000
-    
+    # compared with max_active_size=5000000
+    ('engine.scraper.slot.active_size', True),
+
     ('engine.has_capacity()', False),
-    ('len(engine.scraper.slot.queue)', False), # Always 0 due to coding stuff
+    # Always 0 due to coding stuff
+    ('len(engine.scraper.slot.queue)', False),
     ('engine.scraper.is_idle()', False),
-    ('engine.scraper.slot.needs_backout()', False), # Means that slot.active_size > max_active_size
-    ('engine.spider_is_idle(engine.spider)', False), # Means that spider would typically be closing
+    # Means that slot.active_size > max_active_size
+    ('engine.scraper.slot.needs_backout()', False),
+    # Means that spider would typically be closing
+    ('engine.spider_is_idle(engine.spider)', False),
     ('engine.slot.closing', False),
     ('engine.spider.name', False),
     ('len(engine.slot.scheduler.dqs or [])', False),
@@ -84,7 +91,7 @@ r = Reporter([
     ('scheduler/enqueued', False),
     ('scheduler/dequeued', False),
     ('item_scraped_count', True),
-    
+
     ('log_count/INFO', False),
     ('downloader/response_count', False),
     ('response_received_count', False),
@@ -101,15 +108,16 @@ r = Reporter([
 
 try:
     lastd = datetime.now()
-    
+
     while True:
         resp = tn.read_very_eager()
         nowd = datetime.now()
         r.parse(resp, (nowd - lastd).total_seconds())
         lastd = nowd
-    
-        tn.write("est()\nimport json\nfrom bson import json_util\njson.dumps(stats.get_stats(), default=json_util.default)\n")
-    
+
+        tn.write("est()\nimport json\nfrom bson import json_util\njson.dumps"
+                 "(stats.get_stats(), default=json_util.default)\n")
+
         time.sleep(1)
 except EOFError:
     pass
