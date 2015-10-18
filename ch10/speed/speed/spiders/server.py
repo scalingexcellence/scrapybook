@@ -55,7 +55,7 @@ class Index(BaseResource):
             'SPEED_DETAILS_PER_INDEX_PAGE', 20)
         self.items_per_page = settings.getint('SPEED_ITEMS_PER_DETAIL', 1)
         self.limit = settings.getint('SPEED_TOTAL_ITEMS', 1000)
-        self.index_lookahead = settings.getint('SPEED_INDEX_POINTAHEAD', 4)
+        self.index_lookahead = settings.getint('SPEED_INDEX_POINTAHEAD', 1)
 
     def _delayedRender(self, request):
         p = self.get_if(request, 'p', 1, int)

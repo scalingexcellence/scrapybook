@@ -31,6 +31,9 @@ class SpeedSpider(CrawlSpider):
 
     @classmethod
     def from_crawler(cls, crawler, *args, **kwargs):
+        if crawler.settings.getbool('SPEED_INDEX_RULE_LAST', False):
+            cls.rules = (cls.rules[1], cls.rules[0])
+
         spider = super(SpeedSpider, cls).from_crawler(crawler, *args, **kwargs)
 
         if not crawler.settings.getbool('SPEED_SKIP_SERVER', False):
@@ -60,8 +63,18 @@ class SpeedSpider(CrawlSpider):
             # The requests out of the index page get processed in the same
             # parallel(... CONCURRENT_ITEMS) among regular Items.
             port = self.settings.getint('SPEED_PORT', 9312)
-            url = 'http://localhost:%d/index' % port
-            yield self.make_requests_from_url(url)
+
+            index_shards = self.settings.getint('SPEED_INDEX_SHARDS', 1)
+
+            index_pages_count = self.get_index_pages_count()
+
+            # Round up
+            shard_length = (index_pages_count+index_shards-1) / index_shards
+
+            for i in xrange(1, index_pages_count, shard_length):
+                url = 'http://localhost:%d/index?p=%d' % (port, i)
+                yield self.make_requests_from_url(url)
+
         elif start_requests_style == 'Force':
             # This is feeding those requests directly into the scheduler's
             # queue.
@@ -74,12 +87,26 @@ class SpeedSpider(CrawlSpider):
         else:
             print "No start_requests."
 
+    def get_index_pages_count(self):
+        details_per_index = self.settings.getint(
+            'SPEED_DETAILS_PER_INDEX_PAGE', 20)
+        items_per_page = self.settings.getint('SPEED_ITEMS_PER_DETAIL', 1)
+
+        page_worth = details_per_index * items_per_page
+
+        total_items = self.settings.getint('SPEED_TOTAL_ITEMS', 1000)
+
+        # Round up
+        index_pages_count = (total_items + page_worth - 1) / page_worth
+
+        return index_pages_count
+
     def closed(self, reason):
         if hasattr(self, 'server'):
             self.server.close()
 
     def my_process_request(self, r):
-        if self.settings.getbool('SPEED_INDEX_HIGHER_PRIORITY', True):
+        if self.settings.getbool('SPEED_INDEX_HIGHER_PRIORITY', False):
             r.priority = 1
         return r
 
