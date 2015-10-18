@@ -11,9 +11,12 @@ RUN pip install requests celery[redis] PyPDF2
 
 # Add our defaults file for increasing file limit
 COPY scrapyd /etc/default/
+COPY app app
 
 # Clean up APT when done.
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-EXPOSE 6800
-CMD ["scrapyd"]
+WORKDIR app
+
+EXPOSE 9312
+CMD ["./web.py"]

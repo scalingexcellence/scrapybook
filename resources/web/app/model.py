@@ -28,6 +28,7 @@ class Model(object):
             "price": price,
             "address": location,
             "image": image,
+            "link": "property_%06d.html" % i
         }
 
     @staticmethod
