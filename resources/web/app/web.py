@@ -149,17 +149,22 @@ class Benchmark(Resource):
                 '<a href="benchmark/index?p=1">index</a>, '
                 '<a href="benchmark/detail?id0=1">detail</a>')
 
+
 class ILoginGate(Interface):
     nonce = Attribute("random nonce")
     logged_in = Attribute("true if successfully logged in")
 
+
 class LoginGate(object):
     implements(ILoginGate)
+
     def __init__(self, session):
         self.nonce = str(random.random())
         self.logged_in = False
 
+
 registerAdapter(LoginGate, Session, ILoginGate)
+
 
 class Dynamic(Resource):
 
@@ -192,7 +197,7 @@ class Dynamic(Resource):
         session = request.getSession()
         tsesion = ILoginGate(session)
         location = "/dynamic/error"
-        
+
         try:
             if request.path not in ["/dynamic/nonce-login", "/dynamic/login"]:
                 raise Exception('unsupported login type')
@@ -222,8 +227,8 @@ class Dynamic(Resource):
 class Properties(BaseResource):
 
     def __init__(self):
-        # 150 ms default delay
-        BaseResource.__init__(self, 0.15)
+        # 250 ms default delay
+        BaseResource.__init__(self, 0.25)
 
         self.model = Model()
         self.properties = 50000
@@ -233,7 +238,16 @@ class Properties(BaseResource):
         try:
             properties, per_index = self.properties, self.per_index
 
-            if request.path.startswith("/properties/index_"):
+            if request.path == "/properties/api.json":
+                items = []
+                for i in xrange(30):
+                    item = self.model.get_item(i)
+                    items.append({'id': i, "title": item['title']})
+
+                request.setHeader("content-type", "application/json")
+                request.write(json.dumps(items))
+
+            elif request.path.startswith("/properties/index_"):
                 m = re.search(r'.*_(\d+)', request.path)
                 if not m:
                     raise Exception('expected number')
@@ -250,12 +264,10 @@ class Properties(BaseResource):
                 start = per_index * page
                 end = min(per_index * (page + 1), properties)
 
-                its = (self.model.get_item(i) for i in xrange(start, end))
-
                 index = {
                     'page': page,
                     'nextp': None if page >= (indices-1) else np,
-                    'its': its
+                    'items': self.model.get_items(xrange(start, end))
                 }
 
                 request.write(View.render_index(index))
@@ -275,6 +287,7 @@ class Properties(BaseResource):
                 request.write(View.render_property(item))
             else:
                 raise Exception('unknown page')
+                
         except:
             request.write('can\'t find page. sorry')
 

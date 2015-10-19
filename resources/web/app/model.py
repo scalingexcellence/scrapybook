@@ -2,7 +2,7 @@
 
 import math
 import unittest
-
+import types
 
 class Model(object):
 
@@ -14,22 +14,26 @@ class Model(object):
         self._title_weights = gen.create_weights(self._titles)
 
     def get_item(self, i):
-        gen = Generator(i+1)  # Avoid 0
+        return next(self.get_items([i]))
+        
+    def get_items(self, ids):
+        for i in ids:
+            gen = Generator(i+1)  # Avoid 0
 
-        location = gen.choice(self._locations)
-        title = gen.create_sentence(self._titles)
-        description = gen.create_paragraph(self._descriptions)
-        price = str(gen.rand_price(title, self._title_weights))
-        image = "../images/i%02d.jpg" % gen.rand(17)
+            location = gen.choice(self._locations)
+            title = gen.create_sentence(self._titles)
+            description = gen.create_paragraph(self._descriptions)
+            price = str(gen.rand_price(title, self._title_weights))
+            image = "../images/i%02d.jpg" % gen.rand(17)
 
-        return {
-            "description": description,
-            "title": title,
-            "price": price,
-            "address": location,
-            "image": image,
-            "link": "property_%06d.html" % i
-        }
+            yield {
+                "description": description,
+                "title": title,
+                "price": price,
+                "address": location,
+                "image": image,
+                "link": "property_%06d.html" % i
+            }
 
     @staticmethod
     def from_file(file):
@@ -87,6 +91,7 @@ class TestModel(unittest.TestCase):
             'address': 'Angel, London',
             'description': 'equipped everyone itself',
             'image': '../images/i06.jpg',
+            'link': 'property_000001.html',
             'price': '707.0',
             'title': 'own n top westminster residential electric click'
         }
@@ -98,10 +103,20 @@ class TestModel(unittest.TestCase):
             'power selection comprises\r\nextremely ceilings facilities '
             'present ring natural availability together',
             'image': '../images/i00.jpg',
+            'link': 'property_000323.html',
             'price': '1287.92',
             'title': 'sale congrats de'
         }
         self.assertEqual(expected, self.model.get_item(323))
+
+    def test_bulk_crate(self):
+        items = self.model.get_items(xrange(3))
+        self.assertTrue(isinstance(items, types.GeneratorType))
+        self.assertEqual('property_000000.html', next(items)['link'])
+        self.assertEqual('property_000001.html', next(items)['link'])
+        self.assertEqual('property_000002.html', next(items)['link'])
+        with self.assertRaises(StopIteration):
+            next(items)
 
 if __name__ == '__main__':
     unittest.main()

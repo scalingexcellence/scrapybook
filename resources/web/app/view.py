@@ -72,7 +72,7 @@ a {text-decoration:none;}
 <ul>
 """ % idx['page'])
 
-        for item in idx['its']:
+        for item in idx['items']:
             parts.append("""
 <li class="listing-maxi" itemscope itemtype="http://schema.org/Product">
   <a class="listing-link" itemprop="url" href="%s">
