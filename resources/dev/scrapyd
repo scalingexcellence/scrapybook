@@ -1,2 +1,0 @@
-# Defaults for the scrapyd service
-ulimit -n 524288
