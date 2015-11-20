@@ -5,7 +5,6 @@ Vagrant.configure("2") do |config|
 			#d.image = "scrapybook/web"
                         d.build_dir = "../scrapybook-docker-web"
 			d.name = "web"
-			d.ports = ["9312:9312"]
 		end
 		web.vm.network "forwarded_port", guest: 9312, host: 9312
                 web.vm.synced_folder ".", "/vagrant", disabled: true
@@ -17,7 +16,6 @@ Vagrant.configure("2") do |config|
                 d.build_dir = "../scrapybook-docker-spark"
                 d.name = "spark"
                 d.has_ssh = true
-                d.create_args = ["-p", "21:21", "30000-30009:30000-30009"]
             end
             spark.vm.synced_folder ".", "/root/book"
             spark.vm.network "forwarded_port", guest: 21, host: 21
@@ -32,7 +30,6 @@ Vagrant.configure("2") do |config|
                         d.build_dir = "../scrapybook-docker-dev/trusty/latest"
 			d.name = "dev"
 			d.has_ssh = true
-			d.ports = ["6800:6800"]
 			d.link("web:web")
 			d.link("spark:spark")
 		end
