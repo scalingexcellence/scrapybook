@@ -60,5 +60,4 @@ class BasicSpider(scrapy.Spider):
         l.add_value('server', socket.gethostname())
         l.add_value('date', datetime.datetime.now())
 
-        return l.load_item() 
-
+        return l.load_item()
