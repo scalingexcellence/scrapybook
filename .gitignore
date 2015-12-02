@@ -43,5 +43,4 @@ nosetests.xml
 
 # This is usually scrapy cache folders
 .scrapy
-resources_
 .vagrant
