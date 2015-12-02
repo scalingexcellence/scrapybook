@@ -1,7 +1,6 @@
 import datetime
 import urlparse
 import socket
-
 import scrapy
 
 from scrapy.loader.processors import MapCompose, Join
@@ -13,11 +12,12 @@ from properties.items import PropertiesItem
 
 class BasicSpider(scrapy.Spider):
     name = 'fast'
-    allowed_domains = ['scrapybook.s3.amazonaws.com']
+    allowed_domains = ["web"]
 
     # Start on the first index page
-    start_urls = ['http://scrapybook.s3.amazonaws.com/'
-                  'properties/index_00000.html']
+    start_urls = (
+        'http://web:9312/properties/index_00000.html',
+    )
 
     def parse(self, response):
         # Get the next index URLs and yield Requests
@@ -41,20 +41,24 @@ class BasicSpider(scrapy.Spider):
         l.add_xpath('price', './/*[@itemprop="price"][1]/text()',
                     MapCompose(lambda i: i.replace(',', ''), float),
                     re='[,.0-9]+')
-        l.add_xpath('description', './/*[@itemprop="description"][1]/text()',
+        l.add_xpath('description',
+                    './/*[@itemprop="description"][1]/text()',
                     MapCompose(unicode.strip), Join())
         l.add_xpath('address',
-                    './/*[@itemtype="http://schema.org/Place"][1]/*/text()',
+                    './/*[@itemtype="http://schema.org/Place"]'
+                    '[1]/*/text()',
                     MapCompose(unicode.strip))
+        make_url = lambda i: urlparse.urljoin(response.url, i)
         l.add_xpath('image_urls', './/*[@itemprop="image"][1]/@src',
-                    MapCompose(lambda i: urlparse.urljoin(response.url, i)))
+                    MapCompose(make_url))
 
         # Housekeeping fields
         l.add_xpath('url', './/*[@itemprop="url"][1]/@href',
-                    MapCompose(lambda i: urlparse.urljoin(response.url, i)))
+                    MapCompose(make_url))
         l.add_value('project', self.settings.get('BOT_NAME'))
         l.add_value('spider', self.name)
         l.add_value('server', socket.gethostname())
         l.add_value('date', datetime.datetime.now())
 
-        return l.load_item()
+        return l.load_item() 
+

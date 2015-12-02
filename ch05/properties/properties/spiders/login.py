@@ -13,13 +13,13 @@ from properties.items import PropertiesItem
 
 class LoginSpider(CrawlSpider):
     name = 'login'
-    allowed_domains = ["scrapybook.s3.amazonaws.com"]
+    allowed_domains = ["web"]
 
     # Start with a login request
     def start_requests(self):
         return [
             FormRequest(
-                "http://examples.scrapybook.com/post/login.php",
+                "http://web:9312/dynamic/login",
                 formdata={"user": "user", "pass": "pass"}
             )]
 
@@ -33,7 +33,7 @@ class LoginSpider(CrawlSpider):
     def parse_item(self, response):
         """ This function parses a property page.
 
-        @url http://scrapybook.s3.amazonaws.com/properties/property_000000.html
+        @url http://web:9312/properties/property_000000.html
         @returns items 1
         @scrapes title price description address image_urls
         @scrapes url project spider server date

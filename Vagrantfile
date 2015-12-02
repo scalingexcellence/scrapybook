@@ -10,6 +10,7 @@ Vagrant.configure("2") do |config|
                 web.vm.synced_folder ".", "/vagrant", disabled: true
 	end
 
+if false
         config.vm.define "spark" do |spark|
             spark.vm.provider "docker" do |d|
                 #d.image = "scrapybook/spark"
@@ -23,7 +24,8 @@ Vagrant.configure("2") do |config|
                 spark.vm.network "forwarded_port", guest: port, host: port
             end
         end
-	
+end
+
 	config.vm.define "dev", primary: true do |dev|
 		dev.vm.provider "docker" do |d|
 			#d.image = "scrapybook/dev"
@@ -31,7 +33,7 @@ Vagrant.configure("2") do |config|
 			d.name = "dev"
 			d.has_ssh = true
 			d.link("web:web")
-			d.link("spark:spark")
+			#d.link("spark:spark")
 		end
             dev.vm.synced_folder ".", "/root/book"
             dev.vm.network "forwarded_port", guest: 6800, host: 6800

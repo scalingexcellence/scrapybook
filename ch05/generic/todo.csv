@@ -1,4 +1,1 @@
-url,name,price
-http://scrapybook.s3.amazonaws.com/generic/a.html,"//*[@id=""itemTitle""]/text()","//*[@id=""prcIsum""]/text()"
-http://scrapybook.s3.amazonaws.com/generic/b.html,//h1/text(),//span/strong/text()
-http://scrapybook.s3.amazonaws.com/generic/c.html,"//*[@id=""product-desc""]/span/text()",
+url,name,pricehttp://web:9312/static/a.html,"//*[@id=""itemTitle""]/text()","//*[@id=""prcIsum""]/text()"http://web:9312/static/b.html,//h1/text(),//span/strong/text()http://web:9312/static/c.html,"//*[@id=""product-desc""]/span/text()",
