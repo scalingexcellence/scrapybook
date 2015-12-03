@@ -15,12 +15,6 @@ NEWSPIDER_MODULE = 'properties.spiders'
 # the user-agent
 #USER_AGENT = 'properties (+http://www.yourdomain.com)'
 
-ITEM_PIPELINES = {'scrapy.pipelines.images.ImagesPipeline': 1}
-IMAGES_STORE = 'images'
-IMAGES_THUMBS = { 'small': (30, 30) }
-
-COMMANDS_MODULE='properties.hi'
-
 # Disable S3
 AWS_ACCESS_KEY_ID = ""
 AWS_SECRET_ACCESS_KEY = ""
