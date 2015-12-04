@@ -8,6 +8,7 @@ Vagrant.configure("2") do |config|
 		end
 		web.vm.network "forwarded_port", guest: 9312, host: 9312
                 web.vm.synced_folder ".", "/vagrant", disabled: true
+                web.vm.hostname = "web"
 	end
 
 if false
@@ -37,6 +38,7 @@ end
 		end
             dev.vm.synced_folder ".", "/root/book"
             dev.vm.network "forwarded_port", guest: 6800, host: 6800
+            dev.vm.hostname = "dev"
     end
 
     config.ssh.username = 'root'
