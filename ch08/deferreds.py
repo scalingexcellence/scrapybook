@@ -39,7 +39,8 @@ def example0():
         return arg
 
     # Experiment 3.a
-    a, b = defer.Deferred(), defer.Deferred()
+    a = defer.Deferred()
+    b = defer.Deferred()
 
     a.addCallback(b_callback).addCallback(on_done)
 
@@ -54,7 +55,8 @@ def example0():
     status(a, b)
 
     # Experiment 3.b
-    a, b = defer.Deferred(), defer.Deferred()
+    a = defer.Deferred()
+    b = defer.Deferred()
 
     a.addCallback(b_callback).addCallback(on_done)
 
@@ -67,12 +69,13 @@ def example0():
     status(a, b)
 
     # Experiment 4
-    ll = [defer.Deferred() for i in xrange(10)]
-    join = defer.DeferredList(ll)
+    deferreds = [defer.Deferred() for i in xrange(5)]
+    join = defer.DeferredList(deferreds)
     join.addCallback(on_done)
-    [ll[i].callback(i) for i in xrange(9)]
+    for i in xrange(4):
+        deferreds[i].callback(i)
 
-    ll[9].callback(9)
+    deferreds[4].callback(4)
 
 from time import sleep
 
@@ -96,9 +99,10 @@ def install_wordpress(customer):
 def example1():
     # I do this all day long for our customers
     def developer_day(customers):
-        [install_wordpress(customer) for customer in customers]
+        for customer in customers:
+            install_wordpress(customer)
 
-    developer_day(["Javier", "Jakub", "Anton"])
+    developer_day(["Bill", "Elon", "Steve", "Mark"])
 
 
 def example2():
@@ -196,7 +200,7 @@ def example4():
     from twisted.internet import defer
     from twisted.internet import task
 
-    # Twisted gave us utilities that make code way more readable!
+    # Twisted gave us utilities that make our code way more readable!
     @defer.inlineCallbacks
     def inline_install(customer):
         print "Scheduling: Installation for", customer

@@ -17,7 +17,32 @@ from scrapy.spiders import CrawlSpider, Rule
 from scrapy.exceptions import NotConfigured
 from scrapy import signals
 
-from server import SimpleServer
+
+settings_to_url = {
+    # Website structure
+    "SPEED_TOTAL_ITEMS": "ti",
+    "SPEED_DETAILS_PER_INDEX_PAGE": "dp",
+    "SPEED_ITEMS_PER_DETAIL": "id",
+    "SPEED_DETAIL_EXTRA_SIZE": "ds",
+    "SPEED_INDEX_POINTAHEAD": "ip",
+    # Response times
+    "SPEED_T_RESPONSE": "rr",
+    "SPEED_API_T_RESPONSE": "ar",
+    "SPEED_DETAIL_T_RESPONSE": "dr",
+    "SPEED_INDEX_T_RESPONSE": "ir",
+}
+
+
+def get_base_url(settings):
+    port = settings.getint('SPEED_PORT', 9312)
+    args = []
+    for (setting, arg_name) in settings_to_url.iteritems():
+        arg_value = settings.get(setting)
+        # If a setting is set, then reflect that to the URL
+        if arg_value:
+            args.append("/%s:%s" % (arg_name, arg_value))
+
+    return "http://web:%d%s/benchmark/" % (port, "".join(args))
 
 
 class DummyItem(scrapy.Item):
@@ -36,24 +61,19 @@ class SpeedSpider(CrawlSpider):
 
         spider = super(SpeedSpider, cls).from_crawler(crawler, *args, **kwargs)
 
-        if not crawler.settings.getbool('SPEED_SKIP_SERVER', False):
-            port = crawler.settings.getint('SPEED_PORT', 9312)
-            spider.server = SimpleServer(port, crawler.settings)
-
         spider.blocking_delay = crawler.settings.getfloat(
             'SPEED_SPIDER_BLOCKING_DELAY', 0.0)
+        spider.base = get_base_url(crawler.settings)
 
         return spider
 
     def get_detail_requests(self):
-        port = self.settings.getint('SPEED_PORT', 9312)
         items_per_page = self.settings.getint('SPEED_ITEMS_PER_DETAIL', 1)
         total_items = self.settings.getint('SPEED_TOTAL_ITEMS', 1000)
 
-        callback = self.parse_item
-        url = 'http://localhost:%d/detail?id0=%d'
-        m_range = xrange(1, total_items+1, items_per_page)
-        return [Request(url % (port, i), callback=callback) for i in m_range]
+        for i in xrange(1, total_items+1, items_per_page):
+            yield Request(self.base + "detail?id0=%d" % i,
+                          callback=self.parse_item)
 
     def start_requests(self):
         start_requests_style = self.settings.get('SPEED_START_REQUESTS_STYLE',
@@ -62,8 +82,6 @@ class SpeedSpider(CrawlSpider):
         if start_requests_style == 'UseIndex':
             # The requests out of the index page get processed in the same
             # parallel(... CONCURRENT_ITEMS) among regular Items.
-            port = self.settings.getint('SPEED_PORT', 9312)
-
             index_shards = self.settings.getint('SPEED_INDEX_SHARDS', 1)
 
             index_pages_count = self.get_index_pages_count()
@@ -72,7 +90,7 @@ class SpeedSpider(CrawlSpider):
             shard_length = (index_pages_count+index_shards-1) / index_shards
 
             for i in xrange(1, index_pages_count, shard_length):
-                url = 'http://localhost:%d/index?p=%d' % (port, i)
+                url = self.base + "index?p=%d" % i
                 yield self.make_requests_from_url(url)
 
         elif start_requests_style == 'Force':
@@ -100,10 +118,6 @@ class SpeedSpider(CrawlSpider):
         index_pages_count = (total_items + page_worth - 1) / page_worth
 
         return index_pages_count
-
-    def closed(self, reason):
-        if hasattr(self, 'server'):
-            self.server.close()
 
     def my_process_request(self, r):
         if self.settings.getbool('SPEED_INDEX_HIGHER_PRIORITY', False):
@@ -142,7 +156,7 @@ class DummyPipeline(object):
             'SPEED_PIPELINE_API_VIA_DOWNLOADER', False)
         self.treq_api = crawler.settings.getbool(
             'SPEED_PIPELINE_API_VIA_TREQ', False)
-        self.port = crawler.settings.getint('SPEED_PORT', 9312)
+        self.base = get_base_url(crawler.settings)
 
     @classmethod
     def from_crawler(cls, crawler):
@@ -167,16 +181,14 @@ class DummyPipeline(object):
 
         if self.downloader_api:
             # Do an API call using Scrapy's downloader
-            url = "http://localhost:%d/api"
             formdata = dict(text=item['info'])
-            request = FormRequest(url % self.port, formdata=formdata)
+            request = FormRequest(self.base + "api", formdata=formdata)
             response = yield self.crawler.engine.download(request, spider)
             item['translation'] = json.loads(response.body)['translation']
 
         if self.treq_api:
             # Do an API call using treq
-            url = "http://localhost:%d/api"
-            response = yield post(url % self.port, {"text": item['info']})
+            response = yield post(self.base + "api", {"text": item['info']})
             json_response = yield response.json()
             item['translation'] = json_response['translation']
 

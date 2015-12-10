@@ -1,0 +1,29 @@
+ELASTIC_SEARCH_PORTS = [9200]
+#REDIS_PORTS = [6379]
+WEB_PORTS = [9312]
+SCRAPYD_PORTS = (6800..6803).to_a
+#SPARK_PORTS = [8030, 8031, 8032, 8033, 8040, 8042, 8080, 8088, 50070, 50075, 50090]
+
+Vagrant.configure("2") do |config|
+	config.vm.box = "ubuntu/trusty64"
+	config.vm.provision "docker"
+	config.vm.define "docker-provider"
+	
+	# Set the mem/cpu requirements
+	config.vm.provider "virtualbox" do |vb|
+		vb.memory = 2048
+		vb.cpus = 2
+		vb.name = "docker-provider"
+		vb.check_guest_additions = false
+	end
+
+	# The following line terminates all ssh connections. Therefore
+	# Vagrant will be forced to reconnect. That's a workaround to have
+	# the docker command in the PATH
+	config.vm.provision "shell", inline: "ps aux | grep 'sshd:' | awk '{print $2}' | xargs kill"
+
+	#REDIS_PORTS + SPARK_PORTS
+	(ELASTIC_SEARCH_PORTS + SCRAPYD_PORTS  + WEB_PORTS).each do |port|
+		config.vm.network "forwarded_port", guest: port, host: port
+	end
+end

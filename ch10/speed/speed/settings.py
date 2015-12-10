@@ -2,7 +2,6 @@
 
 BOT_NAME = 'speed'
 
-COMMANDS_MODULE = 'speed.runserver'
 SPIDER_MODULES = ['speed.spiders']
 NEWSPIDER_MODULE = 'speed.spiders'
 
@@ -69,8 +68,3 @@ SPEED_T_RESPONSE = 0.125
 # DEPTH_PRIORITY = 1
 # SCHEDULER_DISK_QUEUE = 'scrapy.squeue.PickleFifoDiskQueue'
 # SCHEDULER_MEMORY_QUEUE = 'scrapy.squeue.FifoMemoryQueue'
-
-# To run the server independently (another thread for reactor)
-# set this setting
-#SPEED_SKIP_SERVER=True
-# and start ther server with ./runserver.py at top level.

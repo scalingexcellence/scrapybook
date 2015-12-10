@@ -1,20 +1,22 @@
-from scrapy.loader.processors import MapCompose, Join
-from scrapy.linkextractors import LinkExtractor
-from scrapy.spiders import CrawlSpider, Rule
-from scrapy.loader import ItemLoader
-from properties.items import PropertiesItem
 import datetime
 import urlparse
 import socket
 
+from scrapy.loader.processors import MapCompose, Join
+from scrapy.linkextractors import LinkExtractor
+from scrapy.spiders import CrawlSpider, Rule
+from scrapy.loader import ItemLoader
+
+from properties.items import PropertiesItem
+
 
 class EasySpider(CrawlSpider):
     name = 'easy'
-    allowed_domains = ["scrapybook.s3.amazonaws.com"]
+    allowed_domains = ["web"]
 
     # Start on the first index page
     start_urls = (
-        'http://scrapybook.s3.amazonaws.com/properties/index_00000.html',
+        'http://web:9312/properties/index_00000.html',
     )
 
     # Rules for horizontal and vertical crawling
@@ -27,7 +29,7 @@ class EasySpider(CrawlSpider):
     def parse_item(self, response):
         """ This function parses a property page.
 
-        @url http://scrapybook.s3.amazonaws.com/properties/property_000000.html
+        @url http://web:9312/properties/property_000000.html
         @returns items 1
         @scrapes title price description address image_urls
         @scrapes url project spider server date

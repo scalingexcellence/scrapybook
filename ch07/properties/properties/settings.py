@@ -17,9 +17,9 @@ NEWSPIDER_MODULE = 'properties.spiders'
 
 ITEM_PIPELINES = {'scrapy.pipelines.images.ImagesPipeline': 1}
 IMAGES_STORE = 'images'
-IMAGES_THUMBS = { 'small': (30, 30) }
+IMAGES_THUMBS = {'small': (30, 30)}
 
-COMMANDS_MODULE='properties.hi'
+COMMANDS_MODULE = 'properties.hi'
 
 # Disable S3
 AWS_ACCESS_KEY_ID = ""
