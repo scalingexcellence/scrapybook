@@ -195,9 +195,9 @@ def print_shifts(shifts):
         list(reversed(shifts.takeOrdered(5, lambda (k, v): v)))
     )
     
-def main(ssc):
+def main(ssc, args):
     # Monitor the files and give us a DStream of term-price pairs
-    raw_data = ssc.textFileStream(sys.argv[1])
+    raw_data = ssc.textFileStream(args[1])
     word_prices = preprocess(raw_data)
     
     # Update the counters using Spark's updateStateByKey
@@ -219,6 +219,8 @@ if __name__ == "__main__":
 
         sc = SparkContext(appName='unit_test', conf=conf)
 
+        sc.setLogLevel("WARN")
+
         sc.setCheckpointDir("/tmp")
 
         unittest.main()
@@ -235,7 +237,7 @@ if __name__ == "__main__":
 
         ssc.checkpoint("checkpoint")
         
-        main(ssc)
+        main(ssc, sys.argv)
 
         # Start the engine
         ssc.start()
