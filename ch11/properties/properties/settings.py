@@ -16,7 +16,7 @@ NEWSPIDER_MODULE = 'properties.spiders'
 #USER_AGENT = 'properties (+http://www.yourdomain.com)'
 
 SPIDER_MIDDLEWARES = {
-    'properties.middlewares.Distributed': 100,
+#    'properties.middlewares.Distributed': 100,
 }
 
 # Disable S3
@@ -25,8 +25,8 @@ AWS_SECRET_ACCESS_KEY = ""
 
 LOG_LEVEL = "INFO"
 
-CONCURRENT_REQUESTS_PER_DOMAIN = 40
-CONCURRENT_REQUESTS = 40
+CONCURRENT_REQUESTS_PER_DOMAIN = 16
+CONCURRENT_REQUESTS = 16
 
-DISTRIBUTED_TARGET_RULE = 0
-DISTRIBUTED_BATCH_SIZE = 2500
+#DISTRIBUTED_TARGET_RULE = 0
+#DISTRIBUTED_BATCH_SIZE = 2500

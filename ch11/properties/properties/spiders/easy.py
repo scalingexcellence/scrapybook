@@ -12,22 +12,23 @@ from properties.items import PropertiesItem
 
 class EasySpider(CrawlSpider):
     name = 'easy'
-    allowed_domains = ["scrapybook.s3.amazonaws.com"]
+    allowed_domains = ["web"]
 
     # Start on the first index page
-    start_urls = ['http://scrapybook.s3.amazonaws.com/properties/index_%05d.html' % i for i in xrange(0,1667)]
+    start_urls = ['http://web:9312/properties/index_%05d.html' % id
+                  for id in map(lambda x: 1667 * x / 20, range(20))]
 
     # Rules for horizontal and vertical crawling
     rules = (
-#        Rule(LinkExtractor(restrict_xpaths='//*[contains(@class,"next")]')),
+        Rule(LinkExtractor(restrict_xpaths='//*[contains(@class,"next")]')),
         Rule(LinkExtractor(restrict_xpaths='//*[@itemprop="url"]'),
-             callback='parse_item'),
+             callback='parse_item')
     )
 
     def parse_item(self, response):
         """ This function parses a property page.
 
-        @url http://scrapybook.s3.amazonaws.com/properties/property_000000.html
+        @url http://web:9312/properties/property_000000.html
         @returns items 1
         @scrapes title price description address image_urls
         @scrapes url project spider server date
