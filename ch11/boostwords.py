@@ -196,6 +196,10 @@ def print_shifts(shifts):
     )
     
 def main(ssc, args):
+    if len(args) < 2:
+        print "usage: spark-submit book/ch11/boostwords.py file:///root/items"
+        sys.exit()
+
     # Monitor the files and give us a DStream of term-price pairs
     raw_data = ssc.textFileStream(args[1])
     word_prices = preprocess(raw_data)
