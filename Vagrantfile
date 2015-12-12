@@ -165,4 +165,34 @@ Vagrant.configure("2") do |config|
 
 	config.ssh.username = 'root'
 	config.ssh.private_key_path = 'insecure_key'
+	
+	# -------------- Bare VM - normaly disabled --------------
+	
+	config.vm.define "plain", autostart: false do |plain|
+		plain.ssh.username = nil
+		plain.ssh.private_key_path = nil
+	
+		# A plain ubuntu with gui
+		plain.vm.box = "ubuntu/trusty64"
+		
+		config.vm.provision "shell", inline: <<-SHELL
+			apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
+			echo 'deb https://apt.dockerproject.org/repo ubuntu-trusty main' | tee --append /etc/apt/sources.list.d/docker.list > /dev/null
+			apt-get update
+			apt-get install -y git docker-engine
+			usermod -aG docker vagrant
+			
+			wget https://releases.hashicorp.com/vagrant/1.7.4/vagrant_1.7.4_x86_64.deb
+			dpkg -i vagrant_1.7.4_x86_64.deb
+			rm vagrant_1.7.4_x86_64.deb
+		SHELL
+
+		# Set the mem/cpu requirements
+		plain.vm.provider :virtualbox do |vb|
+			vb.memory = 2048
+			vb.cpus = 2
+			vb.name = "plain"
+			vb.check_guest_additions = false
+		end
+	end
 end
