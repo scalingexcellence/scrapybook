@@ -1,7 +1,7 @@
 from pyspark.context import SparkConf, SparkContext, RDD
 from pyspark.streaming import StreamingContext
 from operator import add
-from pprint import pprint
+from pprint import pformat
 
 import unittest
 import json
@@ -189,10 +189,12 @@ class SmokeStreaming(BaseStreamingTestCase):
         self.assertAlmostEqual(-0.44444444, shifts['split'])
 
 def print_shifts(shifts):
-    pprint(
-        shifts.takeOrdered(5, lambda (k, v): -v) +
-        ['...'] +
-        list(reversed(shifts.takeOrdered(5, lambda (k, v): v)))
+    print("\033c" +
+          pformat(
+              shifts.takeOrdered(5, lambda (k, v): -v) +
+              ['...'] +
+              list(reversed(shifts.takeOrdered(5, lambda (k, v): v)))
+          )
     )
     
 def main(ssc, args):
