@@ -105,13 +105,13 @@ class Distributed(object):
             for x in result:
                 if not isinstance(x, Request):
                     yield x
-
-                rule = x.meta.get('rule')
-
-                if rule == self._target:
-                    self._add_to_batch(spider, x)
                 else:
-                    yield x
+                    rule = x.meta.get('rule')
+
+                    if rule == self._target:
+                        self._add_to_batch(spider, x)
+                    else:
+                        yield x
 
     @defer.inlineCallbacks
     def _closed(self, spider, reason, signal, sender):
@@ -123,8 +123,7 @@ class Distributed(object):
         # Submit any remaining URLs
         self._flush_urls(spider)
 
-        dl = defer.DeferredList(self._scrapyd_submits_to_wait)
-        r = yield dl
+        r = yield defer.DeferredList(self._scrapyd_submits_to_wait)
 
         for (success, (debug_data, resp)) in r:
             if not success:
@@ -139,9 +138,6 @@ class Distributed(object):
             if ob["status"] != "ok":
                 logger.error("%s: scrapyd operation %s: %s" %
                              (debug_data, ob["status"], ob))
-                continue
-
-            # Success
 
     def _add_to_batch(self, spider, request):
         """
@@ -150,10 +146,10 @@ class Distributed(object):
         """
         url = request.url
         if not url in self._seen:
+            self._seen.add(url)
             self._urls.append(url)
             if len(self._urls) >= self._batch_size:
                 self._flush_urls(spider)
-            self._seen.add(url)
 
     def _flush_urls(self, spider):
         """
@@ -171,13 +167,13 @@ class Distributed(object):
             ("project", self.settings.get('BOT_NAME')),
             ("spider", spider.name),
             ("setting", "FEED_URI=%s" % self._feed_uri),
+            ("batch", str(self._batch)),
         ]
 
         debug_data = "target (%d): %s" % (len(self._urls), data)
 
         json_urls = json.dumps(self._urls)
         data.append(("setting", "DISTRIBUTED_START_URLS=%s" % json_urls))
-        data.append(("batch", str(self._batch)))
 
         d = treq.post("http://%s/schedule.json" % target,
                       data=data, timeout=5, persistent=False)
