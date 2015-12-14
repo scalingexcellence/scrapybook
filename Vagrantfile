@@ -8,12 +8,10 @@ Vagrant.configure("2") do |config|
 	
 		web.vm.provider "docker" do |d|
 			d.image = "scrapybook/web"
-			#d.build_dir = "../scrapybook-docker-web"
 			d.name = "web"
 
 			d.vagrant_machine = "docker-provider"
 			d.vagrant_vagrantfile = "./Vagrantfile.dockerhost"
-			d.force_host_vm = true
 		end
 		
 		web.vm.synced_folder ".", "/vagrant", disabled: true
@@ -27,14 +25,12 @@ Vagrant.configure("2") do |config|
 	config.vm.define "spark" do |spark|
 	
 		spark.vm.provider "docker" do |d|
-			d.image = "scrapybook/spark"
-			#d.build_dir = "../scrapybook-docker-spark"
+			#d.image = "scrapybook/spark"
+			d.build_dir = "../scrapybook-docker-spark"
 			d.name = "spark"
-			#d.has_ssh = true
 
 			d.vagrant_machine = "docker-provider"
 			d.vagrant_vagrantfile = "./Vagrantfile.dockerhost"
-			d.force_host_vm = true
 		end
 		
 		spark.vm.synced_folder ".", "/root/book"
@@ -57,7 +53,6 @@ Vagrant.configure("2") do |config|
 
 			d.vagrant_machine = "docker-provider"
 			d.vagrant_vagrantfile = "./Vagrantfile.dockerhost"
-			d.force_host_vm = true
 		end
 		
 		es.vm.synced_folder ".", "/vagrant", disabled: true
@@ -77,7 +72,6 @@ Vagrant.configure("2") do |config|
 
 			d.vagrant_machine = "docker-provider"
 			d.vagrant_vagrantfile = "./Vagrantfile.dockerhost"
-			d.force_host_vm = true
 		end
 		
 		redis.vm.synced_folder ".", "/vagrant", disabled: true
@@ -98,7 +92,6 @@ Vagrant.configure("2") do |config|
 
 			d.vagrant_machine = "docker-provider"
 			d.vagrant_vagrantfile = "./Vagrantfile.dockerhost"
-			d.force_host_vm = true
 		end
 		
 		mysql.vm.synced_folder ".", "/vagrant", disabled: true
@@ -117,13 +110,15 @@ Vagrant.configure("2") do |config|
 		config.vm.define host do |scp|
 
 			scp.vm.provider "docker" do |d|
-				d.image = "scrapybook/dev"
-				#d.build_dir = "../scrapybook-docker-dev/trusty/latest"
+				#d.image = "scrapybook/dev"
+				d.build_dir = "../scrapybook-docker-dev"
 				d.name = host
+				
+				d.link("spark:spark")
+				d.link("web:web")
 
 				d.vagrant_machine = "docker-provider"
 				d.vagrant_vagrantfile = "./Vagrantfile.dockerhost"
-				d.force_host_vm = true
 			end
 		
 			scp.vm.synced_folder ".", "/vagrant", disabled: true
@@ -138,23 +133,21 @@ Vagrant.configure("2") do |config|
 	config.vm.define "dev", primary: true do |dev|
 	
 		dev.vm.provider "docker" do |d|
-			d.image = "scrapybook/dev"
-			#d.build_dir = "../scrapybook-docker-dev/trusty/latest"
+			#d.image = "scrapybook/dev"
+			d.build_dir = "../scrapybook-docker-dev"
 			d.name = "dev"
-			#d.has_ssh = true
 
 			d.link("web:web")
 			d.link("spark:spark")
 			d.link("scrapyd1:scrapyd1")
 			d.link("scrapyd2:scrapyd2")
 			d.link("scrapyd3:scrapyd3")
-			d.link("mysql:mysql")
-			d.link("redis:redis")
-			d.link("es:es")
+#			d.link("mysql:mysql")
+#			d.link("redis:redis")
+#			d.link("es:es")
 
 			d.vagrant_machine = "docker-provider"
 			d.vagrant_vagrantfile = "./Vagrantfile.dockerhost"
-			d.force_host_vm = true
 		end
 		
 		dev.vm.synced_folder ".", "/root/book"
@@ -166,33 +159,42 @@ Vagrant.configure("2") do |config|
 	config.ssh.username = 'root'
 	config.ssh.private_key_path = 'insecure_key'
 	
-	# -------------- Bare VM - normaly disabled --------------
-	
-	config.vm.define "plain", autostart: false do |plain|
-		plain.ssh.username = nil
-		plain.ssh.private_key_path = nil
-	
-		# A plain ubuntu with gui
-		plain.vm.box = "ubuntu/trusty64"
-		
-		config.vm.provision "shell", inline: <<-SHELL
-			apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
-			echo 'deb https://apt.dockerproject.org/repo ubuntu-trusty main' | tee --append /etc/apt/sources.list.d/docker.list > /dev/null
-			apt-get update
-			apt-get install -y git docker-engine
-			usermod -aG docker vagrant
-			
-			wget https://releases.hashicorp.com/vagrant/1.7.4/vagrant_1.7.4_x86_64.deb
-			dpkg -i vagrant_1.7.4_x86_64.deb
-			rm vagrant_1.7.4_x86_64.deb
-		SHELL
-
-		# Set the mem/cpu requirements
-		plain.vm.provider :virtualbox do |vb|
-			vb.memory = 2048
-			vb.cpus = 2
-			vb.name = "plain"
-			vb.check_guest_additions = false
-		end
-	end
+	# # -------------- Plain VM - normaly disabled --------------
+	# # To use plain:
+	# 	vagrant up plain
+	# 	vagrant ssh plain
+	# 
+	# 	git clone https://github.com/scalingexcellence/scrapybook
+	# 	cd scrapybook
+	# 	vagrant up --no-parallel
+	# 
+	# 	You won't be able to see parent pages on host's browser by default
+	# 
+	# config.vm.define "plain", autostart: false do |plain|
+	# 	plain.ssh.username = nil
+	# 	plain.ssh.private_key_path = nil
+	# 
+	# 	# A plain ubuntu with gui
+	# 	plain.vm.box = "ubuntu/trusty64"
+	# 	
+	# 	plain.vm.provision "shell", inline: <<-SHELL
+	# 		apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
+	# 		echo 'deb https://apt.dockerproject.org/repo ubuntu-trusty main' | tee --append /etc/apt/sources.list.d/docker.list > /dev/null
+	# 		apt-get update
+	# 		apt-get install -y git docker-engine
+	# 		usermod -aG docker vagrant
+	# 		
+	# 		wget https://releases.hashicorp.com/vagrant/1.7.4/vagrant_1.7.4_x86_64.deb
+	# 		dpkg -i vagrant_1.7.4_x86_64.deb
+	# 		rm vagrant_1.7.4_x86_64.deb
+	# 	SHELL
+	# 
+	# 	# Set the mem/cpu requirements
+	# 	plain.vm.provider :virtualbox do |vb|
+	# 		vb.memory = 2048
+	# 		vb.cpus = 2
+	# 		vb.name = "plain"
+	# 		vb.check_guest_additions = false
+	# 	end
+	# end
 end

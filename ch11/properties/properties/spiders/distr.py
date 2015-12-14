@@ -11,7 +11,7 @@ from properties.items import PropertiesItem
 
 
 class EasySpider(CrawlSpider):
-    name = 'easy'
+    name = 'distr'
     allowed_domains = ["web"]
 
     # Start on the first index page
@@ -21,8 +21,8 @@ class EasySpider(CrawlSpider):
     # Rules for horizontal and vertical crawling
     rules = (
         Rule(LinkExtractor(restrict_xpaths='//*[contains(@class,"next")]')),
-        #Rule(LinkExtractor(restrict_xpaths='//*[@itemprop="url"]'),
-        #callback='parse_item')
+        Rule(LinkExtractor(restrict_xpaths='//*[@itemprop="url"]'),
+             callback='parse_item')
     )
 
     def parse_item(self, response):

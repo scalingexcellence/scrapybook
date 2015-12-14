@@ -239,7 +239,7 @@ if __name__ == "__main__":
 
         sc.setLogLevel("WARN")
 
-        ssc = StreamingContext(sc, 1)
+        ssc = StreamingContext(sc, 5)
 
         ssc.checkpoint("checkpoint")
         
