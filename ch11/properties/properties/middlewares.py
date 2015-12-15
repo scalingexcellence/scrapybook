@@ -22,7 +22,7 @@ class Distributed(object):
     def __init__(self, crawler):
         """Initializes this spider middleware"""
 
-        self.settings = crawler.settings
+        settings = crawler.settings
 
         # You can also use spider's custom_settings to customize target
         # rule for each spider
@@ -31,13 +31,13 @@ class Distributed(object):
         #     'DISTRIBUTED_TARGET_RULE': 2
         # }
         #
-        self._target = self.settings.getint('DISTRIBUTED_TARGET_RULE', -1)
+        self._target = settings.getint('DISTRIBUTED_TARGET_RULE', -1)
         if self._target < 0:
             raise NotConfigured
 
         # If this is set, it's a worker instance and wills start by using
         # those URLs instead of spider's start_requests().
-        self._start_urls = self.settings.get('DISTRIBUTED_START_URLS', None)
+        self._start_urls = settings.get('DISTRIBUTED_START_URLS', None)
         self.is_worker = self._start_urls is not None
 
         # The URLs to be batched
@@ -47,13 +47,13 @@ class Distributed(object):
         self._batch = 1
 
         # The size of a batch. Defaults to 1000.
-        self._batch_size = self.settings.getint('DISTRIBUTED_BATCH_SIZE', 1000)
+        self._batch_size = settings.getint('DISTRIBUTED_BATCH_SIZE', 1000)
 
         # The feed uri
-        self._feed_uri = self.settings.get('DISTRIBUTED_TARGET_FEED_URL', None)
+        self._feed_uri = settings.get('DISTRIBUTED_TARGET_FEED_URL', None)
 
         # Target scrapyd hosts
-        self._targets = self.settings.get("DISTRIBUTED_TARGET_HOSTS")
+        self._targets = settings.get("DISTRIBUTED_TARGET_HOSTS")
 
         # Can't do much as a master without these
         if not self.is_worker:
@@ -68,6 +68,9 @@ class Distributed(object):
 
         # A de-duplicator
         self._seen = set()
+
+        # The project
+        self._project = settings.get('BOT_NAME')
 
     def process_start_requests(self, start_requests, spider):
         """
@@ -164,7 +167,7 @@ class Distributed(object):
                     self._batch, len(self._urls), target)
 
         data = [
-            ("project", self.settings.get('BOT_NAME')),
+            ("project", self._project),
             ("spider", spider.name),
             ("setting", "FEED_URI=%s" % self._feed_uri),
             ("batch", str(self._batch)),
