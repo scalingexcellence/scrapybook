@@ -8,5 +8,5 @@ while read line
 do
     # 4 per second
     sleep 0.25
-    echo "1.20 * $line" | bc -l
+    awk "BEGIN {print 1.20 * $line}"
 done

@@ -54,7 +54,7 @@ class MysqlWriter(object):
         logger = spider.logger
 
         try:
-            yield self.dbpool.runInteraction(MysqlWriter.do_replace, item)
+            yield self.dbpool.runInteraction(self.do_replace, item)
         except MySQLdb.OperationalError:
             if self.report_connection_error:
                 logger.error("Can't connect to MySQL: %s" % self.mysql_url)

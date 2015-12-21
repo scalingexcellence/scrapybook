@@ -17,27 +17,23 @@ NEWSPIDER_MODULE = 'properties.spiders'
 
 ITEM_PIPELINES = {
     'properties.pipelines.tidyup.TidyUp': 100,
-    # 'properties.pipelines.redis.RedisCache': 300,
-    # 'properties.pipelines.geo.GeoPipeline': 400,
+    'properties.pipelines.es.EsWriter': 800,
+    #'properties.pipelines.geo.GeoPipeline': 400,
+    'properties.pipelines.geo2.GeoPipeline': 400,
+    'properties.pipelines.mysql.MysqlWriter': 700,
+    'properties.pipelines.redis.RedisCache': 300,
     'properties.pipelines.computation.UsingBlocking': 500,
     'properties.pipelines.legacy.Pricing': 600,
-    # 'properties.pipelines.mysql.MysqlWriter': 700,
-    # 'properties.pipelines.es.EsWriter': 800,
 }
 
 EXTENSIONS = {'properties.latencies.Latencies': 500, }
 LATENCIES_INTERVAL = 5
 
-import os
+ES_PIPELINE_URL = 'http://es:9200/properties/property/'
 
-REDIS_DEFAULT_URL = 'redis://192.168.59.103:6379'
-REDIS_PIPELINE_URL = os.environ.get('REDIS_PIPELINE_URL', REDIS_DEFAULT_URL)
+MYSQL_PIPELINE_URL = 'mysql://root:pass@mysql/properties'
 
-MYSQL_DEFAULT_URL = 'mysql://root:pass@192.168.59.103/properties'
-MYSQL_PIPELINE_URL = os.environ.get('MYSQL_PIPELINE_URL', MYSQL_DEFAULT_URL)
-
-ES_DEFAULT_URL = 'http://192.168.59.103:9200/properties/property'
-ES_PIPELINE_URL = os.environ.get('ES_PIPELINE_URL', ES_DEFAULT_URL)
+REDIS_PIPELINE_URL = 'redis://redis:6379'
 
 LOG_LEVEL = "INFO"
 

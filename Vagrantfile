@@ -7,7 +7,8 @@ Vagrant.configure("2") do |config|
 	config.vm.define "web" do |web|
 	
 		web.vm.provider "docker" do |d|
-			d.image = "scrapybook/web"
+			#d.image = "scrapybook/web"
+			d.build_dir = "../scrapybook-docker-web"
 			d.name = "web"
 
 			d.vagrant_machine = "docker-provider"
@@ -48,7 +49,8 @@ Vagrant.configure("2") do |config|
 	config.vm.define "es" do |es|
 	
 		es.vm.provider "docker" do |d|
-			d.image = "elasticsearch"
+			#d.image = "elasticsearch"
+			d.build_dir = "../scrapybook-docker-es"
 			d.name = "es"
 
 			d.vagrant_machine = "docker-provider"
@@ -142,9 +144,9 @@ Vagrant.configure("2") do |config|
 			d.link("scrapyd1:scrapyd1")
 			d.link("scrapyd2:scrapyd2")
 			d.link("scrapyd3:scrapyd3")
-#			d.link("mysql:mysql")
-#			d.link("redis:redis")
-#			d.link("es:es")
+			d.link("mysql:mysql")
+			d.link("redis:redis")
+			d.link("es:es")
 
 			d.vagrant_machine = "docker-provider"
 			d.vagrant_vagrantfile = "./Vagrantfile.dockerhost"
