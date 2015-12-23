@@ -49,7 +49,7 @@ Vagrant.configure("2") do |config|
 	config.vm.define "es" do |es|
 	
 		es.vm.provider "docker" do |d|
-			d.image = "elasticsearch"
+			d.image = "scrapybook/es"
 			#d.build_dir = "../scrapybook-docker-es"
 			d.name = "es"
 
