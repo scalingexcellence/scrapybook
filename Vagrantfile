@@ -7,8 +7,8 @@ Vagrant.configure("2") do |config|
 	config.vm.define "web" do |web|
 	
 		web.vm.provider "docker" do |d|
-			#d.image = "scrapybook/web"
-			d.build_dir = "../scrapybook-docker-web"
+			d.image = "scrapybook/web"
+			#d.build_dir = "../scrapybook-docker-web"
 			d.name = "web"
 
 			d.vagrant_machine = "docker-provider"
@@ -26,8 +26,8 @@ Vagrant.configure("2") do |config|
 	config.vm.define "spark" do |spark|
 	
 		spark.vm.provider "docker" do |d|
-			#d.image = "scrapybook/spark"
-			d.build_dir = "../scrapybook-docker-spark"
+			d.image = "scrapybook/spark"
+			#d.build_dir = "../scrapybook-docker-spark"
 			d.name = "spark"
 
 			d.vagrant_machine = "docker-provider"
@@ -49,8 +49,8 @@ Vagrant.configure("2") do |config|
 	config.vm.define "es" do |es|
 	
 		es.vm.provider "docker" do |d|
-			#d.image = "elasticsearch"
-			d.build_dir = "../scrapybook-docker-es"
+			d.image = "elasticsearch"
+			#d.build_dir = "../scrapybook-docker-es"
 			d.name = "es"
 
 			d.vagrant_machine = "docker-provider"
@@ -112,8 +112,8 @@ Vagrant.configure("2") do |config|
 		config.vm.define host do |scp|
 
 			scp.vm.provider "docker" do |d|
-				#d.image = "scrapybook/dev"
-				d.build_dir = "../scrapybook-docker-dev"
+				d.image = "scrapybook/dev"
+				#d.build_dir = "../scrapybook-docker-dev"
 				d.name = host
 				
 				d.link("spark:spark")
@@ -135,8 +135,8 @@ Vagrant.configure("2") do |config|
 	config.vm.define "dev", primary: true do |dev|
 	
 		dev.vm.provider "docker" do |d|
-			#d.image = "scrapybook/dev"
-			d.build_dir = "../scrapybook-docker-dev"
+			d.image = "scrapybook/dev"
+			#d.build_dir = "../scrapybook-docker-dev"
 			d.name = "dev"
 
 			d.link("web:web")
@@ -160,43 +160,4 @@ Vagrant.configure("2") do |config|
 
 	config.ssh.username = 'root'
 	config.ssh.private_key_path = 'insecure_key'
-	
-	# # -------------- Plain VM - normaly disabled --------------
-	# # To use plain:
-	# 	vagrant up plain
-	# 	vagrant ssh plain
-	# 
-	# 	git clone https://github.com/scalingexcellence/scrapybook
-	# 	cd scrapybook
-	# 	vagrant up --no-parallel
-	# 
-	# 	You won't be able to see parent pages on host's browser by default
-	# 
-	# config.vm.define "plain", autostart: false do |plain|
-	# 	plain.ssh.username = nil
-	# 	plain.ssh.private_key_path = nil
-	# 
-	# 	# A plain ubuntu with gui
-	# 	plain.vm.box = "ubuntu/trusty64"
-	# 	
-	# 	plain.vm.provision "shell", inline: <<-SHELL
-	# 		apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
-	# 		echo 'deb https://apt.dockerproject.org/repo ubuntu-trusty main' | tee --append /etc/apt/sources.list.d/docker.list > /dev/null
-	# 		apt-get update
-	# 		apt-get install -y git docker-engine
-	# 		usermod -aG docker vagrant
-	# 		
-	# 		wget https://releases.hashicorp.com/vagrant/1.7.4/vagrant_1.7.4_x86_64.deb
-	# 		dpkg -i vagrant_1.7.4_x86_64.deb
-	# 		rm vagrant_1.7.4_x86_64.deb
-	# 	SHELL
-	# 
-	# 	# Set the mem/cpu requirements
-	# 	plain.vm.provider :virtualbox do |vb|
-	# 		vb.memory = 2048
-	# 		vb.cpus = 2
-	# 		vb.name = "plain"
-	# 		vb.check_guest_additions = false
-	# 	end
-	# end
 end
