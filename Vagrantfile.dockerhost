@@ -44,6 +44,11 @@ Vagrant.configure("2") do |config|
 		config.vm.provision "shell", inline: "echo 'export https_proxy=#{proxy_url}' >> /etc/default/docker"
 		config.vm.provision "shell", inline: "service docker restart"
 	end
+	
+	# The following line terminates all ssh connections. Therefore
+	# Vagrant will be forced to reconnect. That's a workaround to have
+	# the docker command in the PATH
+	config.vm.provision "shell", inline: "ps aux | grep 'sshd:' | awk '{print $2}' | xargs kill"
 
 	config.vm.define "docker-provider"
 	config.vm.box = "ubuntu/trusty64"
