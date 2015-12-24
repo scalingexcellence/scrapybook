@@ -1,21 +1,49 @@
+# Set if you are behind proxy
+#proxy_url = "http://proxy:port"
+
+# Set if you are behind a TLS interception proxy
+#crt_filename = "my-ca-certificate.crt"
+
 Vagrant.configure("2") do |config|
 
-	config.vm.provision "docker"
+	if !defined?(proxy_url) || proxy_url.nil? || proxy_url.empty?
 
-	# The following line terminates all ssh connections. Therefore
-	# Vagrant will be forced to reconnect. That's a workaround to have
-	# the docker command in the PATH
-	config.vm.provision "shell", inline: "ps aux | grep 'sshd:' | awk '{print $2}' | xargs kill"
-	
-	# config.vm.provision "shell", inline: <<-SHELL
-	# 	apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
-	# 	echo 'deb https://apt.dockerproject.org/repo ubuntu-trusty main' | tee --append /etc/apt/sources.list.d/docker.list > /dev/null
-	# 	apt-get update
-	# 	apt-get install -y git docker-engine
-	# 	usermod -aG docker vagrant
-	# 	
-	# 	ps aux | grep 'sshd:' | awk '{print $2}' | xargs kill
-	# SHELL
+		# No proxy setup necessary. Just provision docker.
+		config.vm.provision "docker"
+
+	else
+		# Setup proxies
+
+		ENV['http_proxy']  = proxy_url
+		ENV['https_proxy'] = proxy_url
+
+		config.vm.provision "shell", inline: "echo 'Using #{proxy_url} as a proxy'"
+
+		config.vm.box_download_insecure = true
+		config.vm.box_check_update = false
+
+		config.vm.provision "shell", inline: "echo 'http_proxy=#{proxy_url}' >> /etc/environment"
+		config.vm.provision "shell", inline: "echo 'https_proxy=#{proxy_url}' >> /etc/environment"
+
+		config.vm.provision "shell", inline: "echo 'Acquire::http::Proxy \"#{proxy_url}\";' >> /etc/apt/apt.conf"
+
+		unless !defined?(crt_filename) || crt_filename.nil? || crt_filename.empty?
+			# Adding crt file and updating ca certificates
+			config.vm.provision "shell", inline: "echo 'Using #{crt_filename} as a certificate'"
+			config.vm.provision "shell", inline: "sudo cp /vagrant/#{crt_filename} /usr/local/share/ca-certificates/#{crt_filename}"
+			config.vm.provision "shell", inline: "sudo update-ca-certificates"
+		end
+
+		# Restart ssh so that /etc/environment settings get picked
+		config.vm.provision "shell", inline: "ps aux | grep 'sshd:' | awk '{print $2}' | xargs kill"
+
+		# Provision docker.
+		config.vm.provision "docker"
+
+		config.vm.provision "shell", inline: "echo 'export http_proxy=#{proxy_url}' >> /etc/default/docker"
+		config.vm.provision "shell", inline: "echo 'export https_proxy=#{proxy_url}' >> /etc/default/docker"
+		config.vm.provision "shell", inline: "service docker restart"
+	end
 
 	config.vm.define "docker-provider"
 	config.vm.box = "ubuntu/trusty64"
