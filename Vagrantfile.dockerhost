@@ -34,8 +34,8 @@ Vagrant.configure("2") do |config|
 
 	# Set the mem/cpu requirements
 	config.vm.provider :virtualbox do |vb|
-		vb.memory = 4096
-		vb.cpus = 8
+		vb.memory = 2048
+		vb.cpus = 4
 		vb.name = "docker-provider"
 		vb.check_guest_additions = false
 	end

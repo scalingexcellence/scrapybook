@@ -69,7 +69,8 @@ Vagrant.configure("2") do |config|
 	config.vm.define "redis" do |redis|
 	
 		redis.vm.provider "docker" do |d|
-			d.image = "redis"
+			d.image = "scrapybook/redis"
+			#d.build_dir = "../scrapybook-docker-redis"
 			d.name = "redis"
 
 			d.vagrant_machine = "docker-provider"
@@ -88,8 +89,8 @@ Vagrant.configure("2") do |config|
 	config.vm.define "mysql" do |mysql|
 	
 		mysql.vm.provider "docker" do |d|
-			d.image = "mysql:latest"
-			d.create_args = ["-e" ,"MYSQL_ROOT_PASSWORD=pass"]
+			d.image = "scrapybook/mysql"
+			#d.build_dir = "../scrapybook-docker-mysql"
 			d.name = "mysql"
 
 			d.vagrant_machine = "docker-provider"
