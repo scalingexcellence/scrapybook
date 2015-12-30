@@ -1,5 +1,5 @@
 # Set if you are behind proxy
-#proxy_url = "http://proxy:port"
+#proxy_url = "http://user:pass@proxy.com:8080/"
 
 # Set if you are behind a TLS interception proxy
 #crt_filename = "my-ca-certificate.crt"
@@ -19,16 +19,15 @@ Vagrant.configure("2") do |config|
 
 		config.vm.provision "shell", inline: "echo 'Using #{proxy_url} as a proxy'"
 
-		config.vm.box_download_insecure = true
-		config.vm.box_check_update = false
-
 		config.vm.provision "shell", inline: "echo 'http_proxy=#{proxy_url}' >> /etc/environment"
 		config.vm.provision "shell", inline: "echo 'https_proxy=#{proxy_url}' >> /etc/environment"
 
 		config.vm.provision "shell", inline: "echo 'Acquire::http::Proxy \"#{proxy_url}\";' >> /etc/apt/apt.conf"
 
 		unless !defined?(crt_filename) || crt_filename.nil? || crt_filename.empty?
-			# Adding crt file and updating ca certificates
+			# Vagrant should use the certificate to download boxes
+			config.vm.box_download_ca_cert = crt_filename
+			# Add crt file and update CA certificates
 			config.vm.provision "shell", inline: "echo 'Using #{crt_filename} as a certificate'"
 			config.vm.provision "shell", inline: "sudo cp /vagrant/#{crt_filename} /usr/local/share/ca-certificates/#{crt_filename}"
 			config.vm.provision "shell", inline: "sudo update-ca-certificates"
