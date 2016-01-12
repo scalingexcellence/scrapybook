@@ -10,7 +10,7 @@ from scrapy.http import Request
 from properties.items import PropertiesItem
 
 
-class BasicSpider(scrapy.Spider):
+class FastSpider(scrapy.Spider):
     name = 'fast'
     allowed_domains = ["web"]
 
