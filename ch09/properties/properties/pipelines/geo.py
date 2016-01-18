@@ -25,8 +25,8 @@ class GeoPipeline(object):
         """
 
         # The url for this API
-        endpoint = 'https://maps.googleapis.com/maps/api/geocode/json'
-        #endpoint = 'http://web:9312/maps/api/geocode/json'
+        #endpoint = 'https://maps.googleapis.com/maps/api/geocode/json'
+        endpoint = 'http://web:9312/maps/api/geocode/json'
 
         # Do the call
         parms = [('address', address), ('sensor', 'false')]
