@@ -1,7 +1,7 @@
-scrapybook
+Scrapybook
 ==========
 
-Scrapy Book Code [Tutorial]
+# Learning Scrapy Book
 
-see also: [on the official website](http://scrapybook.com)
+See also [the official website](http://scrapybook.com)
 
