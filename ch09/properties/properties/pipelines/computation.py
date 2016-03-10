@@ -24,6 +24,14 @@ class UsingBlocking(object):
         price = item["price"][0]
 
         # Call a complex/blocking function in a thread pool
+        # Note that while this will give you some performance boost
+        # it's still subject to GIL and likely won't make the most
+        # out of systems with multiple CPUs/cores.
+        # Consider Twisted's spawnProcess() (example in legacy.py)
+        # or crafting a custom solution around Python's
+        # multiprocessing.Process to make the most out of your
+        # cores for CPU intensive tasks. Also consider doing this
+        # processing as a batch post-processing step as shown in Chapter 11.
         out = defer.Deferred()
         reactor.callInThread(self._do_calculation, price, out)
 
