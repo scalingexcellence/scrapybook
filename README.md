@@ -30,7 +30,7 @@ $ vagrant box add scrapybook scrapybook.box
 ```
 
 Notes:
-* Downloading (2.8 GB) will likely take a few minutes
+* Downloading it will take a few minutes (2.8 GB).
 * Make sure `scrapybook.box` is on your current directory while doing `vagrant box add`.
 * You can check with `vagrant box list` that the box was successfully added.
 
