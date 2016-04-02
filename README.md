@@ -20,7 +20,7 @@ See also [the official website](http://scrapybook.com)
 
 ## Alternative installation instructions
 
-In some regions, the Vagrant-Docker system takes some time to set-up. This alternative method will help you resolve any issues.
+In some regions, the Vagrant-Docker system takes some time and might take several retries to set-up. This alternative method will help you resolve any issues.
 
 Step 1. Download and add [the Vagrant box](http://scrapybook.com/scrapybook.box) either manually or with something like wget:
 
