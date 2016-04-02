@@ -34,12 +34,11 @@ Notes:
 * Make sure `scrapybook.box` is on your current directory while doing `vagrant box add`.
 * You can check with `vagrant box list` that the box was successfully added.
 
-Step 2. Clone this repo and edit Vagrantfile:
+Step 2. Clone this repo and replace `Vagrantfile.dockerhost` with `Vagrantfile.dockerhost.boxed`:
 
 ```
 $ git clone git@github.com:scalingexcellence/scrapybook.git
+$ mv Vagrantfile.dockerhost.boxed Vagrantfile.dockerhost
 ```
-
-Edit `Vagrantfile` and replace `"./Vagrantfile.dockerhost"` with `"./Vagrantfile.dockerhost.boxed"`.
 
 That was it! You can start the system as usual with `vagrant up --no-parallel`. There will be no extra downloads and it will take just a few seconds.
