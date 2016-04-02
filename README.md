@@ -18,3 +18,17 @@ This book is now available on [Amazon](http://amzn.to/1PeQ5O0) and [Packt](https
 
 See also [the official website](http://scrapybook.com)
 
+## Alternative installation instructions
+
+In some regions, the Vagrant-Docker system takes some time to set-up. This alternative method will help you resolve any issues.
+
+```
+$ git clone git@github.com:scalingexcellence/scrapybook.git
+$ wget http://scrapybook.com/scrapybook.box  # This will take a few minutes (2.8 GB)
+$ vagrant box add scrapybook scrapybook.box
+```
+
+Now edit `Vagrantfile` and replace "./Vagrantfile.dockerhost" with "./Vagrantfile.dockerhost.boxed".
+
+You can now do `vagrant up --no-parallel` and the system will be up in a few seconds. 
+
