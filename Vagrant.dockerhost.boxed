@@ -1,3 +1,8 @@
+# Do:
+# $ wget http://scrapybook.com/scrapybook.box
+# $ vagrant box add scrapybook scrapybook.box
+# Before using this file.
+
 Vagrant.configure("2") do |config|
         config.vm.define "docker-provider"
         config.vm.box = "scrapybook"
