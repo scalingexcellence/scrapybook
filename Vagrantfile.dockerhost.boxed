@@ -15,7 +15,6 @@ Vagrant.configure("2") do |config|
                 [9312] +                      # Web
                 (6800..6803).to_a +           # Scrapyd
                 [21] + (30000..30009).to_a  + # Spark
-                [22]                          # ssh
         []).each do |port|
                 config.vm.network "forwarded_port", guest: port, host: port
         end
