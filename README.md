@@ -28,7 +28,7 @@ $ wget http://scrapybook.com/scrapybook.box  # This will take a few minutes (2.8
 $ vagrant box add scrapybook scrapybook.box
 ```
 
-Now edit `Vagrantfile` and replace "./Vagrantfile.dockerhost" with "./Vagrantfile.dockerhost.boxed".
+Now edit `Vagrantfile` and replace `"./Vagrantfile.dockerhost"` with `"./Vagrantfile.dockerhost.boxed"`.
 
 You can now do `vagrant up --no-parallel` and the system will be up in a few seconds. 
 
