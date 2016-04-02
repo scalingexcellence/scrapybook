@@ -1,5 +1,7 @@
 ENV['VAGRANT_DEFAULT_PROVIDER'] = "docker"
 
+host_vagrantfile = "./Vagrantfile.dockerhost"
+
 Vagrant.configure("2") do |config|
 
 	# -------------- Web server --------------
@@ -12,7 +14,7 @@ Vagrant.configure("2") do |config|
 			d.name = "web"
 
 			d.vagrant_machine = "docker-provider"
-			d.vagrant_vagrantfile = "./Vagrantfile.dockerhost"
+			d.vagrant_vagrantfile = host_vagrantfile
 		end
 		
 		web.vm.synced_folder ".", "/vagrant", disabled: true
@@ -31,7 +33,7 @@ Vagrant.configure("2") do |config|
 			d.name = "spark"
 
 			d.vagrant_machine = "docker-provider"
-			d.vagrant_vagrantfile = "./Vagrantfile.dockerhost"
+			d.vagrant_vagrantfile = host_vagrantfile
 		end
 		
 		spark.vm.synced_folder ".", "/root/book"
@@ -54,7 +56,7 @@ Vagrant.configure("2") do |config|
 			d.name = "es"
 
 			d.vagrant_machine = "docker-provider"
-			d.vagrant_vagrantfile = "./Vagrantfile.dockerhost"
+			d.vagrant_vagrantfile = host_vagrantfile
 		end
 		
 		es.vm.synced_folder ".", "/vagrant", disabled: true
@@ -74,7 +76,7 @@ Vagrant.configure("2") do |config|
 			d.name = "redis"
 
 			d.vagrant_machine = "docker-provider"
-			d.vagrant_vagrantfile = "./Vagrantfile.dockerhost"
+			d.vagrant_vagrantfile = host_vagrantfile
 		end
 		
 		redis.vm.synced_folder ".", "/vagrant", disabled: true
@@ -94,7 +96,7 @@ Vagrant.configure("2") do |config|
 			d.name = "mysql"
 
 			d.vagrant_machine = "docker-provider"
-			d.vagrant_vagrantfile = "./Vagrantfile.dockerhost"
+			d.vagrant_vagrantfile = host_vagrantfile
 		end
 		
 		mysql.vm.synced_folder ".", "/vagrant", disabled: true
@@ -121,7 +123,7 @@ Vagrant.configure("2") do |config|
 				d.link("web:web")
 
 				d.vagrant_machine = "docker-provider"
-				d.vagrant_vagrantfile = "./Vagrantfile.dockerhost"
+				d.vagrant_vagrantfile = host_vagrantfile
 			end
 		
 			scp.vm.synced_folder ".", "/vagrant", disabled: true
@@ -150,7 +152,7 @@ Vagrant.configure("2") do |config|
 			d.link("es:es")
 
 			d.vagrant_machine = "docker-provider"
-			d.vagrant_vagrantfile = "./Vagrantfile.dockerhost"
+			d.vagrant_vagrantfile = host_vagrantfile
 		end
 		
 		dev.vm.synced_folder ".", "/root/book"
