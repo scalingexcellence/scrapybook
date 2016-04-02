@@ -22,13 +22,24 @@ See also [the official website](http://scrapybook.com)
 
 In some regions, the Vagrant-Docker system takes some time to set-up. This alternative method will help you resolve any issues.
 
+Step 1. Download and add [the Vagrant box](http://scrapybook.com/scrapybook.box) either manually or with something like wget:
+
 ```
-$ git clone git@github.com:scalingexcellence/scrapybook.git
-$ wget http://scrapybook.com/scrapybook.box  # This will take a few minutes (2.8 GB)
+$ wget http://scrapybook.com/scrapybook.box
 $ vagrant box add scrapybook scrapybook.box
 ```
 
-Now edit `Vagrantfile` and replace `"./Vagrantfile.dockerhost"` with `"./Vagrantfile.dockerhost.boxed"`.
+Notes:
+* Downloading (2.8 GB) will likely take a few minutes
+* Make sure `scrapybook.box` is on your current directory while doing `vagrant box add`.
+* You can check with `vagrant box list` that the box was successfully added.
 
-You can now do `vagrant up --no-parallel` and the system will be up in a few seconds. 
+Step 2. Clone this repo and edit Vagrantfile:
 
+```
+$ git clone git@github.com:scalingexcellence/scrapybook.git
+```
+
+Edit `Vagrantfile` and replace `"./Vagrantfile.dockerhost"` with `"./Vagrantfile.dockerhost.boxed"`.
+
+That was it! You can start the system as usual with `vagrant up --no-parallel`. There will be no extra downloads and it will take just a few seconds.
