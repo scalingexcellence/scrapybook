@@ -31,6 +31,7 @@ $ vagrant box add scrapybook scrapybook.box
 
 Notes:
 * Downloading it will take a few minutes (2.8 GB).
+* `md5sum scrapybook.box` should give: 975950d4970c3425ee37654a760985e2
 * Make sure `scrapybook.box` is on your current directory while doing `vagrant box add`.
 * You can check with `vagrant box list` that the box was successfully added.
 
