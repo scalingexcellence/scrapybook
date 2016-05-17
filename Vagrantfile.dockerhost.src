@@ -1,0 +1,74 @@
+# Set if you are behind proxy
+#proxy_url = "http://user:pass@proxy.com:8080/"
+
+# Set if you are behind a TLS interception proxy
+#crt_filename = "my-ca-certificate.crt"
+
+Vagrant.configure("2") do |config|
+
+	if !defined?(proxy_url) || proxy_url.nil? || proxy_url.empty?
+
+		# No proxy setup necessary. Just provision docker.
+		config.vm.provision "docker"
+
+	else
+		# Setup proxies
+
+		ENV['http_proxy']  = proxy_url
+		ENV['https_proxy'] = proxy_url
+
+		config.vm.provision "shell", inline: "echo 'Using #{proxy_url} as a proxy'"
+
+		config.vm.provision "shell", inline: "echo 'http_proxy=#{proxy_url}' >> /etc/environment"
+		config.vm.provision "shell", inline: "echo 'https_proxy=#{proxy_url}' >> /etc/environment"
+
+		config.vm.provision "shell", inline: "echo 'Acquire::http::Proxy \"#{proxy_url}\";' >> /etc/apt/apt.conf"
+
+		unless !defined?(crt_filename) || crt_filename.nil? || crt_filename.empty?
+			# Vagrant should use the certificate to download boxes
+			config.vm.box_download_ca_cert = crt_filename
+			# Add crt file and update CA certificates
+			config.vm.provision "shell", inline: "echo 'Using #{crt_filename} as a certificate'"
+			config.vm.provision "shell", inline: "sudo cp /vagrant/#{crt_filename} /usr/local/share/ca-certificates/#{crt_filename}"
+			config.vm.provision "shell", inline: "sudo update-ca-certificates"
+		end
+
+		# Restart ssh so that /etc/environment settings get picked
+		config.vm.provision "shell", inline: "ps aux | grep 'sshd:' | awk '{print $2}' | xargs kill"
+
+		# Provision docker.
+		config.vm.provision "docker"
+
+		config.vm.provision "shell", inline: "echo 'export http_proxy=#{proxy_url}' >> /etc/default/docker"
+		config.vm.provision "shell", inline: "echo 'export https_proxy=#{proxy_url}' >> /etc/default/docker"
+		config.vm.provision "shell", inline: "service docker restart"
+	end
+	
+	# The following line terminates all ssh connections. Therefore
+	# Vagrant will be forced to reconnect. That's a workaround to have
+	# the docker command in the PATH
+	config.vm.provision "shell", inline: "ps aux | grep 'sshd:' | awk '{print $2}' | xargs kill"
+
+	config.vm.define "docker-provider"
+	config.vm.box = "ubuntu/trusty64"
+
+	# Setting up ports
+	(
+		[9200] +                      # ES
+		[6379] +                      # Redis
+		[3306] +                      # MySQL
+		[9312] +                      # Web
+		(6800..6803).to_a +           # Scrapyd
+		[21] + (30000..30009).to_a  + # Spark
+	[]).each do |port|
+		config.vm.network "forwarded_port", guest: port, host: port
+	end
+
+	# Set the mem/cpu requirements
+	config.vm.provider :virtualbox do |vb|
+		vb.memory = 2048
+		vb.cpus = 4
+		vb.name = "docker-provider"
+		vb.check_guest_additions = false
+	end
+end
