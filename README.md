@@ -17,29 +17,3 @@ This book is now available on [Amazon](http://amzn.to/1PeQ5O0) and [Packt](https
 - Perform large scale distributed crawls with scrapyd and scrapinghub
 
 See also [the official website](http://scrapybook.com)
-
-## Alternative installation instructions
-
-In some regions, the Vagrant-Docker system takes some time and might take several retries to set-up. This alternative method will help you resolve any issues.
-
-Step 1. Download and add [this Vagrant box](http://scrapybook.com/scrapybook.box):
-
-```
-$ wget http://scrapybook.com/scrapybook.box
-$ vagrant box add scrapybook scrapybook.box
-```
-
-Notes:
-* Downloading it will take a few minutes (2.8 GB).
-* `md5sum scrapybook.box` should give: 975950d4970c3425ee37654a760985e2
-* Make sure `scrapybook.box` is on your current directory while doing `vagrant box add`.
-* You can check with `vagrant box list` that the box was successfully added.
-
-Step 2. Clone this repo and replace `Vagrantfile.dockerhost` with `Vagrantfile.dockerhost.boxed`:
-
-```
-$ git clone git@github.com:scalingexcellence/scrapybook.git
-$ mv Vagrantfile.dockerhost.boxed Vagrantfile.dockerhost
-```
-
-That was it! You can start the system as usual with `vagrant up --no-parallel`. There will be no extra downloads and it will take just a few seconds.
