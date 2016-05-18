@@ -1,0 +1,28 @@
+Vagrant.configure("2") do |config|
+
+# Box based on ubuntu/trusty32. Limited but it works without any
+# virtualization extensions.
+
+	config.vm.define "scrapy-vm-32"
+	config.vm.box = "lookfwd/scrapybook32"
+
+	config.vm.hostname = "dev"
+	config.vm.synced_folder ".", "/home/vagrant/book"
+
+	# Setting up ports
+	(
+		[9200] +                      # ES
+		[6379] +                      # Redis
+		[3306] +                      # MySQL
+		[9312] +                      # Web
+		[6800] +                      # Scrapyd
+	[]).each do |port|
+		config.vm.network "forwarded_port", guest: port, host: port
+	end
+
+	# Set the mem/cpu requirements
+	config.vm.provider :virtualbox do |vb|
+		vb.name = "scrapy-vm-32"
+		vb.check_guest_additions = false
+	end
+end
