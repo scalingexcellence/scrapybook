@@ -1,6 +1,7 @@
 ENV['VAGRANT_DEFAULT_PROVIDER'] = "docker"
 
 host_vagrantfile = "./Vagrantfile.dockerhost"
+force_host_vm = ENV['VAGRANT_FORCE_HOST_VM'] || FALSE
 
 Vagrant.configure("2") do |config|
 
@@ -15,6 +16,7 @@ Vagrant.configure("2") do |config|
 
 			d.vagrant_machine = "docker-provider"
 			d.vagrant_vagrantfile = host_vagrantfile
+			d.force_host_vm = force_host_vm
 		end
 		
 		web.vm.synced_folder ".", "/vagrant", disabled: true
@@ -34,6 +36,7 @@ Vagrant.configure("2") do |config|
 
 			d.vagrant_machine = "docker-provider"
 			d.vagrant_vagrantfile = host_vagrantfile
+			d.force_host_vm = force_host_vm
 		end
 		
 		spark.vm.synced_folder ".", "/root/book"
@@ -57,6 +60,7 @@ Vagrant.configure("2") do |config|
 
 			d.vagrant_machine = "docker-provider"
 			d.vagrant_vagrantfile = host_vagrantfile
+			d.force_host_vm = force_host_vm
 		end
 		
 		es.vm.synced_folder ".", "/vagrant", disabled: true
@@ -77,6 +81,7 @@ Vagrant.configure("2") do |config|
 
 			d.vagrant_machine = "docker-provider"
 			d.vagrant_vagrantfile = host_vagrantfile
+			d.force_host_vm = force_host_vm
 		end
 		
 		redis.vm.synced_folder ".", "/vagrant", disabled: true
@@ -97,6 +102,7 @@ Vagrant.configure("2") do |config|
 
 			d.vagrant_machine = "docker-provider"
 			d.vagrant_vagrantfile = host_vagrantfile
+			d.force_host_vm = force_host_vm
 		end
 		
 		mysql.vm.synced_folder ".", "/vagrant", disabled: true
@@ -124,6 +130,7 @@ Vagrant.configure("2") do |config|
 
 				d.vagrant_machine = "docker-provider"
 				d.vagrant_vagrantfile = host_vagrantfile
+				d.force_host_vm = force_host_vm
 			end
 		
 			scp.vm.synced_folder ".", "/vagrant", disabled: true
@@ -153,6 +160,7 @@ Vagrant.configure("2") do |config|
 
 			d.vagrant_machine = "docker-provider"
 			d.vagrant_vagrantfile = host_vagrantfile
+			d.force_host_vm = force_host_vm
 		end
 		
 		dev.vm.synced_folder ".", "/root/book"
