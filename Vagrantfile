@@ -1,7 +1,7 @@
 ENV['VAGRANT_DEFAULT_PROVIDER'] = "docker"
 
 host_vagrantfile = "./Vagrantfile.dockerhost"
-force_host_vm = ENV['SCRAPYBOOK_FORCE_HOST_VM'] || FALSE
+force_host_vm = TRUE
 
 Vagrant.configure("2") do |config|
 
