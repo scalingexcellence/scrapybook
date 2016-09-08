@@ -25,5 +25,14 @@ Vagrant.configure("2") do |config|
 		vb.name = "scrapy-vm-32"
 		vb.check_guest_additions = false
 		vb.cpus = 1
+		# If you get: cloud-init-nonet[4.54]: waiting 10 seconds for network device
+		#             cloud-init-nonet[14.57]: waiting 120 seconds for network device
+		#             cloud-init-nonet[134.57]: gave up waiting for a network device.
+		# Your netowrk card is not supported with the default adapter.
+		# See: https://github.com/mitchellh/vagrant/issues/3860#issuecomment-167664778
+		# Try to uncomment the following two lines:
+		# 
+		# vb.customize ["modifyvm", :id, "--nictype1", "Am79C973"]
+		# vb.customize ["modifyvm", :id, "--nictype2", "Am79C973"]
 	end
 end
