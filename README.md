@@ -16,4 +16,18 @@ This book is now available on [Amazon](http://amzn.to/1PeQ5O0) and [Packt](https
 - Make your crawler super-fast by learning how to tune Scrapy's performance
 - Perform large scale distributed crawls with scrapyd and scrapinghub
 
+## Tutorials
+
+* How to Setup Software and Run Examples On A Windows Machine
+
+[![image](https://cloud.githubusercontent.com/assets/789359/24506332/0c016008-1555-11e7-86e3-c736e953a199.PNG)](https://www.youtube.com/watch?v=r84-dsIRFI8)
+
+* Chapter 4 - Create Appery.io mobile application - Updated process
+
+[![image](https://cloud.githubusercontent.com/assets/789359/24486821/e6c99072-1503-11e7-9d45-7eed9c13c7b6.png)](https://www.youtube.com/watch?v=FEbPyQJc3NE)
+
+* Chapter 3 & 9 on a 32-bit VM (for computers limited memory/processing power)
+
+[![image](https://cloud.githubusercontent.com/assets/789359/24482446/26a8eae6-14e9-11e7-9244-d5117954ccea.png)](https://www.youtube.com/watch?v=w9ditoIQ7sU)
+
 See also [the official website](http://scrapybook.com)
