@@ -17,7 +17,7 @@ Vagrant.configure("2") do |config|
 		[9312] +                      # Web
 		[6800] +                      # Scrapyd
 	[]).each do |port|
-		config.vm.network "forwarded_port", guest: port, host: port
+		config.vm.network "forwarded_port", guest: port, host: port, host_ip: "localhost", auto_correct: true
 	end
 
 	# Set the mem/cpu requirements
