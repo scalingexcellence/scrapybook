@@ -61,7 +61,7 @@ Vagrant.configure("2") do |config|
 		(6800..6803).to_a +           # Scrapyd
 		[21] + (30000..30009).to_a  + # Spark
 	[]).each do |port|
-		config.vm.network "forwarded_port", guest: port, host: port
+		config.vm.network "forwarded_port", guest: port, host: port, host_ip: "localhost", auto_correct: true
 	end
 
 	# Set the mem/cpu requirements
