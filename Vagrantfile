@@ -21,7 +21,7 @@ Vagrant.configure("2") do |config|
 		
 		web.vm.synced_folder ".", "/vagrant", disabled: true
 		
-		web.vm.network "forwarded_port", guest: 9312, host: 9312
+		web.vm.network "forwarded_port", guest: 9312, host: 9312, host_ip: "localhost", auto_correct: true
 		web.vm.hostname = "web"
 	end
 
@@ -43,7 +43,7 @@ Vagrant.configure("2") do |config|
 		
 		spark.vm.network "forwarded_port", guest: 21, host: 21
 		(30000..30009).each do |port|
-			spark.vm.network "forwarded_port", guest: port, host: port
+			spark.vm.network "forwarded_port", guest: port, host: port, host_ip: "localhost", auto_correct: true
 		end
 		spark.vm.hostname = "spark"
 	end
@@ -65,7 +65,7 @@ Vagrant.configure("2") do |config|
 		
 		es.vm.synced_folder ".", "/vagrant", disabled: true
 		
-		es.vm.network "forwarded_port", guest: 9200, host: 9200
+		es.vm.network "forwarded_port", guest: 9200, host: 9200, host_ip: "localhost", auto_correct: true
 		es.vm.hostname = "es"
 	end
 	
@@ -86,7 +86,7 @@ Vagrant.configure("2") do |config|
 		
 		redis.vm.synced_folder ".", "/vagrant", disabled: true
 		
-		redis.vm.network "forwarded_port", guest: 6379, host: 6379
+		redis.vm.network "forwarded_port", guest: 6379, host: 6379, host_ip: "localhost", auto_correct: true
 		redis.vm.hostname = "redis"
 	end
 	
@@ -107,7 +107,7 @@ Vagrant.configure("2") do |config|
 		
 		mysql.vm.synced_folder ".", "/vagrant", disabled: true
 		
-		mysql.vm.network "forwarded_port", guest: 3306, host: 3306
+		mysql.vm.network "forwarded_port", guest: 3306, host: 3306, host_ip: "localhost", auto_correct: true
 		mysql.vm.hostname = "mysql"
 	end
 	# -------------- 3 Scrapyd servers --------------
@@ -135,7 +135,7 @@ Vagrant.configure("2") do |config|
 		
 			scp.vm.synced_folder ".", "/vagrant", disabled: true
 		
-			scp.vm.network "forwarded_port", guest: 6800, host: port
+			scp.vm.network "forwarded_port", guest: 6800, host: port, host_ip: "localhost", auto_correct: true
 			scp.vm.hostname = host
 		end
 	end
@@ -165,7 +165,7 @@ Vagrant.configure("2") do |config|
 		
 		dev.vm.synced_folder ".", "/root/book"
 		
-		dev.vm.network "forwarded_port", guest: 6800, host: 6800
+		dev.vm.network "forwarded_port", guest: 6800, host: 6800, host_ip: "localhost", auto_correct: true
 		dev.vm.hostname = "dev"
 	end
 
