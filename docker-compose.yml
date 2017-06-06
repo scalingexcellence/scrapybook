@@ -1,0 +1,60 @@
+version: '2'
+services:
+  web:
+    image: scrapybook/web
+    ports:
+      - "9312:9312"
+
+  spark:
+    image: scrapybook/spark
+    ports:
+      - "21:21"
+      - "30000:30000"
+      - "30001:30001"
+      - "30002:30002"
+      - "30003:30003"
+      - "30004:30004"
+      - "30005:30005"
+      - "30006:30006"
+      - "30007:30007"
+      - "30008:30008"
+      - "30009:30009"
+    volumes:
+      - .:/root/book
+
+  es:
+    image: scrapybook/es
+    ports:
+      - "9200:9200"
+
+  redis:
+    image: scrapybook/redis
+    ports:
+      - "6379:6379"
+
+  mysql:
+    image: scrapybook/mysql
+    ports:
+      - "3306:3306"
+
+  scrapyd1:
+    image: scrapybook/dev
+    ports:
+      - "6801:6800"
+
+  scrapyd2:
+    image: scrapybook/dev
+    ports:
+      - "6802:6800"
+
+  scrapyd3:
+    image: scrapybook/dev
+    ports:
+      - "6803:6800"
+
+  dev:
+    image: scrapybook/dev
+    ports:
+      - "6800:6800"
+    volumes:
+      - .:/root/book
