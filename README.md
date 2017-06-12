@@ -49,8 +49,8 @@ create a Unix group called docker and add users to it:
 Once you have Docker installed and started, change to the project directory and run:
 
   1. `docker-compose pull` - To check for updated images
-  2. `docker-compose up` - Will scroll log messages as various services start up. Ctrl-C will stop containers, or `docker-compose down` in another shell window.
+  2. `docker-compose up` - Will scroll log messages as various containers (virtual machines) start up. To stop the containers, Ctrl-C in this window, or enter `docker-compose down` in another shell window.
 
-`docker system prune` will delete the system-wide Docker images, containers, and volumes that are not in use when want to recover space.
+`docker system prune` will delete the system-wide Docker images, containers, and volumes that are not in use when you want to recover space.
 
 See also [the official website](http://scrapybook.com)
