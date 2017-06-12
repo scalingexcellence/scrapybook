@@ -39,9 +39,9 @@ A `docker-compose.yml` file is included, mainly for those who already have Docke
 * For Windows 10 Pro, with Enterprise and Education (1511 November update, Build 10586 or later), get [Docker for Windows](https://docs.docker.com/docker-for-windows/).
 * For Windows 7, 8.1 or other 10, get [Docker Toolbox for Windows](https://docs.docker.com/toolbox/toolbox_install_windows/).
 * For Ubuntu and other Linux distributions, install
-[docker](https://docs.docker.com/engine/installation/linux/ubuntulinux/) and
+[docker](https://docs.docker.com/engine/installation/linux/ubuntu/) and
 [docker-compose](https://docs.docker.com/compose/install/).
-  To [avoid having to use sudo when you use the docker command](https://docs.docker.com/engine/installation/linux/ubuntulinux/#/create-a-docker-group),
+  To [avoid having to use sudo when you use the docker command](https://docs.docker.com/engine/installation/linux/linux-postinstall/),
 create a Unix group called docker and add users to it:
   1. `sudo groupadd docker`
   2. `sudo usermod -aG docker $USER`
